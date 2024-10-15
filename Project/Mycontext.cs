@@ -1,18 +1,17 @@
-class MyContext
+using Microsoft.EntityFrameworkCore;
+
+namespace CalendifyApp
 {
-
-    public WebApplication app { get; set; }
-    public MyContext(WebApplication app)
+    public class MyContext : DbContext
     {
-        this.app = app;
-        DefineEndPoints();
-    }
-    private void DefineEndPoints()
-    {
-        app.MapPost("/Login", (string user, string pass) => UserLogin);
-    }
+        public DbSet<Event> Events { get; set; }
+        public DbSet<Attendance> Attendance { get; set; }
 
+        public MyContext(DbContextOptions<MyContext> options) : base(options) { }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
+    }
 }
-
-
-// def UserLogin
