@@ -7,4 +7,6 @@ public class Event
     public TimeSpan StartTime { get; set; }
     public TimeSpan EndTime { get; set; }
     public string? Location { get; set; }  // Nullable
+    public bool Admin_approval { get; set; }
+
 }

@@ -1,4 +1,4 @@
-namespace CalendifyApp
+namespace Project.Models
 {
     public class Attendance
     {
