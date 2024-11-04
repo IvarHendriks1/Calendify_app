@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Project.Models;
 using System.Linq;
+using CalendifyApp.Models;
 
-namespace CalendifyApp
+namespace CalendifyApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -19,7 +19,7 @@ namespace CalendifyApp
         public IActionResult AttendEvent([FromBody] AttendanceDto attendance)
         {
             // Simulated login state (replace with actual logic once login is ready)
-            bool Login = true; 
+            bool Login = true;
 
             if (!Login)
             {
@@ -27,7 +27,7 @@ namespace CalendifyApp
             }
 
             // Check if the event exists
-            var eventExists = _context.Events.Any(e => e.Id == attendance.EventId);
+            var eventExists = _context.Events.Any(e => e.EventId == attendance.EventId);
             if (!eventExists)
             {
                 return NotFound("Event not found.");
