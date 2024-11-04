@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Project.Models;
 
-namespace CalendifyApp
+namespace CalendifyApp.Models
 {
     public class MyContext : DbContext
     {

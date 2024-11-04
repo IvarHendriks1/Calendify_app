@@ -2,9 +2,11 @@
 {
     public class Admin
     {
-        public int Id { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Email { get; set; }
+        public int AdminId { get; set; }
+
+        public required string UserName { get; set; }
+        public required string Password { get; set; }
+
+        public required string Email { get; set; }
     }
 }
