@@ -1,0 +1,15 @@
+
+GET http://localhost:5001/hi
+#######
+
+
+POST http://localhost:5001/api/Login
+Content-Type: application/json
+
+{
+  "username": "yourUsername",
+  "password": "yourPassword"
+}
+################
+
+GET http://localhost:5001/api/IsAdminLoggedIn
