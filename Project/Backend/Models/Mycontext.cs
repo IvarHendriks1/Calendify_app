@@ -21,7 +21,7 @@ namespace CalendifyApp.Models
         public DbSet<Event> Events { get; set; }
         public DbSet<Attendance> Attendance { get; set; }
         public DbSet<Admin> Admin { get; set; }
-        public DbSet<Event_Attendance> Reviews { get; set; }
+        public DbSet<Event_Attendance> event_Attendance { get; set; }
         public DbSet<User> Users { get; set; }
 
 
