@@ -17,7 +17,7 @@ namespace Project.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Username = table.Column<string>(type: "TEXT", nullable: false),
+                    UserName = table.Column<string>(type: "TEXT", nullable: false),
                     Password = table.Column<string>(type: "TEXT", nullable: false),
                     Email = table.Column<string>(type: "TEXT", nullable: false)
                 },
@@ -27,32 +27,17 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Attendance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false),
-                    IsPresent = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Attendance", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Events",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
-                    EventDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    StartTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
-                    EndTime = table.Column<TimeSpan>(type: "TEXT", nullable: false),
-                    Location = table.Column<string>(type: "TEXT", nullable: true),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    Date = table.Column<DateOnly>(type: "TEXT", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "TEXT", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "TEXT", nullable: false),
+                    Location = table.Column<string>(type: "TEXT", nullable: false),
                     Admin_approval = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -66,11 +51,11 @@ namespace Project.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    First_name = table.Column<string>(type: "TEXT", nullable: true),
-                    Last_name = table.Column<string>(type: "TEXT", nullable: true),
-                    Email = table.Column<string>(type: "TEXT", nullable: true),
-                    Password = table.Column<string>(type: "TEXT", nullable: true),
-                    Recurring_days = table.Column<string>(type: "TEXT", nullable: true)
+                    First_name = table.Column<string>(type: "TEXT", nullable: false),
+                    Last_name = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    Password = table.Column<string>(type: "TEXT", nullable: false),
+                    Recurring_days = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -78,41 +63,66 @@ namespace Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reviews",
+                name: "Attendance",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Rating = table.Column<double>(type: "REAL", nullable: false),
-                    Feedback = table.Column<string>(type: "TEXT", nullable: false)
+                    Date = table.Column<DateOnly>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                    table.PrimaryKey("PK_Attendance", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reviews_Events_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Events",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Reviews_Users_UserId",
+                        name: "FK_Attendance_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "event_Attendance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    User_Id = table.Column<int>(type: "INTEGER", nullable: false),
+                    Event_Id = table.Column<int>(type: "INTEGER", nullable: false),
+                    Rating = table.Column<int>(type: "INTEGER", nullable: false),
+                    Feedback = table.Column<string>(type: "TEXT", nullable: false),
+                    EventId = table.Column<int>(type: "INTEGER", nullable: true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_event_Attendance", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_event_Attendance_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_event_Attendance_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_EventId",
-                table: "Reviews",
+                name: "IX_Attendance_UserId",
+                table: "Attendance",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_event_Attendance_EventId",
+                table: "event_Attendance",
                 column: "EventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_UserId",
-                table: "Reviews",
+                name: "IX_event_Attendance_UserId",
+                table: "event_Attendance",
                 column: "UserId");
         }
 
@@ -126,7 +136,7 @@ namespace Project.Migrations
                 name: "Attendance");
 
             migrationBuilder.DropTable(
-                name: "Reviews");
+                name: "event_Attendance");
 
             migrationBuilder.DropTable(
                 name: "Events");

@@ -1,6 +1,7 @@
 using CalendifyApp.Models;
 using CalendifyApp.Services;
 using Microsoft.EntityFrameworkCore;
+using CalendifyApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
