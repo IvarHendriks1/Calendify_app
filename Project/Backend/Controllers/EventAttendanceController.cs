@@ -84,19 +84,21 @@ namespace CalendifyApp.Controllers
             }
 
             // Haal de lijst met deelnemers op voor de opgegeven datum
+            // Haal deelnemers op voor de opgegeven datum
             var eventAttendees = _context.Attendance
-                .Where(a => a.Date == eventDate)
+                .Where(a => a.Date == eventDate) // Filter op evenementdatum
                 .Join(
-                    _context.Users,
-                    attendance => attendance.UserId,
-                    user => user.Id,
+                    _context.Users, // Join met Users tabel
+                    attendance => attendance.UserId, // Koppel op UserId
+                    user => user.Id, // Koppel op Id van de gebruiker
                     (attendance, user) => new
                     {
-                        attendance.UserId,
-                        UserName = user.First_name + " " + user.Last_name
+                        attendance.UserId, // UserId van de deelnemer
+                        UserName = user.First_name + " " + user.Last_name // Volledige naam van de gebruiker
                     }
                 )
-                .ToList();
+                .ToList(); // Converteer naar lijst
+
 
             // Controleer of er geen deelnemers zijn gevonden
             if (!eventAttendees.Any())
