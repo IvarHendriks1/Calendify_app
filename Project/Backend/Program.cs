@@ -1,5 +1,5 @@
-using CalendifyApp.Models; 
 using Microsoft.EntityFrameworkCore;
+using CalendifyApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +13,15 @@ app.Urls.Add("http://localhost:5001");
 
 app.MapGet("/hi", () => "Hello pleps!");
 
-// Ensure that MyContext is injected via dependency injection, not instantiated manually.
+// Seed the database on startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<MyContext>();
+    dbContext.Database.EnsureCreated(); // Ensure the database is created
+
+    // Call the Seed method from the DbSeeder class
+    DbSeeder.Seed(dbContext); // Pass the context directly to the seeder
+}
 
 // Run the application
 app.Run();

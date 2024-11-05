@@ -1,8 +1,10 @@
-﻿namespace CalendifyApp.Models
+﻿using System;
+
+namespace CalendifyApp.Models
 {
     public class Admin
     {
-        public int AdminId { get; set; }
+        public int Id { get; set; }
 
         public required string UserName { get; set; }
         public required string Password { get; set; }
