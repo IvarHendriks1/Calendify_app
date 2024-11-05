@@ -1,7 +1,6 @@
 using CalendifyApp.Models;
 using CalendifyApp.Services;
 using Microsoft.EntityFrameworkCore;
-using CalendifyApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -34,3 +33,4 @@ app.MapGet("/hi", () => "Hello pleps!");
 // Run the application
 
 app.Run();
+

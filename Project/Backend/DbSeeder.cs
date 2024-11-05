@@ -1,5 +1,6 @@
 using CalendifyApp.Models;
 using Microsoft.EntityFrameworkCore;
+using CalendifyApp.Utils;
 
 public static class DbSeeder
 {
@@ -12,7 +13,7 @@ public static class DbSeeder
             {
                 Id = 1,
                 UserName = "admin",
-                Password = "password123", // Consider hashing passwords in a real app
+                Password = EncryptionHelper.EncryptPassword("password123"), // Consider hashing passwords in a real app
                 Email = "admin@example.com"
             });
             context.SaveChanges(); // Save changes to the database
@@ -29,7 +30,7 @@ public static class DbSeeder
                     First_name = "John",
                     Last_name = "Doe",
                     Email = "johndoe@example.com",
-                    Password = "password", // Consider hashing passwords in a real app
+                    Password = EncryptionHelper.EncryptPassword("password"), // Consider hashing passwords in a real app
                     Recurring_days = "Monday,Wednesday,Friday"
                 },
                 new User
@@ -38,7 +39,7 @@ public static class DbSeeder
                     First_name = "Jane",
                     Last_name = "Smith",
                     Email = "janesmith@example.com",
-                    Password = "password", // Consider hashing passwords in a real app
+                    Password = EncryptionHelper.EncryptPassword("password"), // Consider hashing passwords in a real app
                     Recurring_days = "Tuesday,Thursday"
                 }
             });
