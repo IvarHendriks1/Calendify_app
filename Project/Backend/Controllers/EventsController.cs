@@ -31,7 +31,7 @@ namespace CalendifyApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddEvent([FromBody] Event objEventToAdd)
+        public IActionResult AddEvent([FromBody] Event eventToAdd)
 
         {
 
@@ -43,11 +43,9 @@ namespace CalendifyApp.Controllers
             {
                 return Unauthorized("User is not logged in.");
             }
-
-            Event eventToAdd = (Event)objEventToAdd;
             if (eventToAdd is not Event)
             {
-                return BadRequest($"{objEventToAdd} \nis not an event");
+                return BadRequest($"{eventToAdd} \nis not an event");
             }
             //Event eventToAdd = (Event)objEventToAdd;
             // Check if the event exists
