@@ -18,6 +18,7 @@
         public required List<Attendance> Attendances { get; set; }
 
         public required List<Event_Attendance> Event_Attendances { get; set; }
+
     }
 
 }
