@@ -2,7 +2,14 @@
 GET http://localhost:5001/hi
 #######
 
+POST http://localhost:5001/api/Login
+Content-Type: application/json
 
+{
+  "username": "admin",
+  "password": "idontknow"
+}
+################
 POST http://localhost:5001/api/Login
 Content-Type: application/json
 
@@ -12,4 +19,25 @@ Content-Type: application/json
 }
 ################
 
+POST http://localhost:5001/api/Login
+Content-Type: application/json
+
+{
+  "username": "John",
+  "password": "password"
+}
+################
+
+
+
 GET http://localhost:5001/api/IsAdminLoggedIn
+###################
+
+GET http://localhost:5001/api/IsUserLoggedIn
+###################
+
+GET http://localhost:5001/api/Logout
+###################
+
+GET http://localhost:5001/api/AdminLogout
+###################
