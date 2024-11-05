@@ -41,6 +41,43 @@ namespace Project.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Admin");
+
+                    b.HasData(
+                        new
+                        {
+                            AdminId = 1,
+                            Email = "admin1@example.com",
+                            Password = "admin",
+                            UserName = "admin1"
+                        },
+                        new
+                        {
+                            AdminId = 2,
+                            Email = "admin2@example.com",
+                            Password = "\\N@6��G��Ae=j_��a%0�QU��\\",
+                            UserName = "admin2"
+                        },
+                        new
+                        {
+                            AdminId = 3,
+                            Email = "admin3@example.com",
+                            Password = "�j\\��f������x�s+2��D�o���",
+                            UserName = "admin3"
+                        },
+                        new
+                        {
+                            AdminId = 4,
+                            Email = "admin4@example.com",
+                            Password = "�].��g��Պ��t��?��^�T��`aǳ",
+                            UserName = "admin4"
+                        },
+                        new
+                        {
+                            AdminId = 5,
+                            Email = "admin5@example.com",
+                            Password = "E�=���:�-����gd����bF��80]�",
+                            UserName = "admin5"
+                        });
                 });
 
             modelBuilder.Entity("CalendifyApp.Models.Attendance", b =>

@@ -1,27 +1,36 @@
+using CalendifyApp.Models;
+using CalendifyApp.Services;
 using Microsoft.EntityFrameworkCore;
 using CalendifyApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddDistributedMemoryCache(); // For session storage
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(10); // Set session timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Register the MyContext DbContext with a SQLite connection string
 builder.Services.AddDbContext<MyContext>(options =>
     options.UseSqlite("Data Source=calendify.db")); // Using SQLite database
 
 var app = builder.Build();
+app.MapControllers();
+
+app.UseSession();
+
 
 app.Urls.Add("http://localhost:5001");
 
 app.MapGet("/hi", () => "Hello pleps!");
 
-// Seed the database on startup
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<MyContext>();
-    dbContext.Database.EnsureCreated(); // Ensure the database is created
 
-    // Call the Seed method from the DbSeeder class
-    DbSeeder.Seed(dbContext); // Pass the context directly to the seeder
-}
+// Ensure that MyContext is injected via dependency injection, not instantiated manually.
 
 // Run the application
+
 app.Run();

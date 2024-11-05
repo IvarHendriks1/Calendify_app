@@ -21,7 +21,12 @@ public class LoginService : ILoginService
     {
         // TODO: Make this method check the password with what is in the database
         if (_context.Admin.Any(x => x.UserName == username)){
-            //Admin admin = _context.Admin.Where(x => x.UserName == username);
+            Admin admin = _context.Admin.Where(x => x.UserName == username).Single();
+            if (admin.Password == inputPassword){
+                return LoginStatus.Success;
+            }
+            return LoginStatus.IncorrectPassword;
+
         }
         
         return LoginStatus.IncorrectUsername;
