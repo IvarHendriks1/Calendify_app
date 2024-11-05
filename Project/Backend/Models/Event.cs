@@ -1,7 +1,7 @@
 namespace CalendifyApp.Models;
 public class Event
 {
-    public int EventId { get; set; }
+    public int Id { get; set; }
 
     public required string Title { get; set; }
 

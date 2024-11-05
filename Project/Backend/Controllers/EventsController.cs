@@ -17,19 +17,22 @@ namespace CalendifyApp.Controllers
             _context = context;
         }
 
+
+        [HttpGet]
+        public IActionResult getEvents()
+        {
+            return Ok(_context.Events.ToList());
+        }
+
         [HttpGet("{id}")]
         public IActionResult getEvent(int id)
         {
-            if (id == 0)
-            {
-                return Ok("return all events");
-            }
             return Ok($"event with id {id}");
-
         }
 
         [HttpPost]
-        public IActionResult AddEvent([FromBody] object objEventToAdd)
+        public IActionResult AddEvent([FromBody] Event objEventToAdd)
+
         {
             // Simulated login state (replace with actual logic once login is ready)
             bool Login = true;
@@ -39,24 +42,85 @@ namespace CalendifyApp.Controllers
                 return Unauthorized("User is not logged in.");
             }
 
-            if (objEventToAdd is not Event)
+            Event eventToAdd = (Event)objEventToAdd;
+            if (eventToAdd is not Event)
             {
                 return BadRequest($"{objEventToAdd} \nis not an event");
             }
-            Event eventToAdd = (Event)objEventToAdd;
+            //Event eventToAdd = (Event)objEventToAdd;
             // Check if the event exists
-            var eventExists = _context.Events.FirstOrDefault(e => e.EventId == eventToAdd.EventId);
+            var eventExists = _context.Events.FirstOrDefault(e => e.Id == eventToAdd.Id);
             if (eventExists is null)
             {
                 _context.Events.Add(eventToAdd);
                 _context.SaveChanges();
-                return Ok($"{objEventToAdd} has been added succesfully");
+                return Ok(new
+                {
+                    message = $"Event with id {eventToAdd.Id} has been added succesfully",
+                    addedEvent = eventToAdd
+                });
             }
             else if (eventExists is Event)
             {
                 return BadRequest("event already exists");
             }
             return BadRequest("given event could not be added");
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteEvent(int id)
+        {
+            bool Login = true;
+
+            if (!Login)
+            {
+                return Unauthorized("User is not logged in.");
+            }
+            var eventToDelete = _context.Events.FirstOrDefault(e => e.Id == id);
+            if (eventToDelete is not null)
+            {
+                _context.Events.Remove(eventToDelete);
+                _context.SaveChanges();
+                return Ok(new
+                {
+                    message = $"Event with id {id} has been deleted successfully",
+                    deletedEvent = eventToDelete
+                });
+            }
+            else
+            {
+                return BadRequest($"event {id} doesn't exists");
+            }
+        }
+
+        [HttpPut]
+        public IActionResult updateEvent([FromBody] Event updatedEvent)
+        {
+            bool Login = true;
+
+            if (!Login)
+            {
+                return Unauthorized("User is not logged in.");
+            }
+
+
+            var eventToUpdate = _context.Events.FirstOrDefault(e => e.Id == updatedEvent.Id);
+            if (eventToUpdate is not null)
+            {
+                _context.Events.Remove(eventToUpdate);
+                _context.Events.Add(updatedEvent);
+                _context.SaveChanges();
+                return Ok(new
+                {
+                    message = $"Event with id {updatedEvent.Id} has been updated successfully",
+                    updatedVersion = updatedEvent,
+                    olderVersion = eventToUpdate
+                });
+            }
+            else
+            {
+                return BadRequest($"event {updatedEvent.Id} doesn't exists");
+            }
         }
     }
 }

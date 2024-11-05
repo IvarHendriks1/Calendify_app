@@ -27,7 +27,7 @@ namespace CalendifyApp.Controllers
             }
 
             // Check if the event exists
-            var eventExists = _context.Events.Any(e => e.EventId == attendance.EventId);
+            var eventExists = _context.Events.Any(e => e.Id == attendance.EventId);
             if (!eventExists)
             {
                 return NotFound("Event not found.");
