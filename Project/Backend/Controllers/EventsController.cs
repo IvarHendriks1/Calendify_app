@@ -27,15 +27,17 @@ namespace CalendifyApp.Controllers
         [HttpGet("{id}")]
         public IActionResult getEvent(int id)
         {
-            return Ok($"event with id {id}");
+            return Ok(_context.Events.Where(x => x.Id == id).Single());
         }
 
         [HttpPost]
         public IActionResult AddEvent([FromBody] Event objEventToAdd)
 
         {
-            // Simulated login state (replace with actual logic once login is ready)
+
             bool Login = true;
+            if (HttpContext.Session.GetString("AdminLoggedIn") is null) Login = false; //als er niet is ingelogd zet de login bool op false
+
 
             if (!Login)
             {
@@ -71,6 +73,8 @@ namespace CalendifyApp.Controllers
         public IActionResult DeleteEvent(int id)
         {
             bool Login = true;
+            if (HttpContext.Session.GetString("AdminLoggedIn") is null) Login = false; //als er niet is ingelogd zet de login bool op false
+
 
             if (!Login)
             {
@@ -97,6 +101,8 @@ namespace CalendifyApp.Controllers
         public IActionResult updateEvent([FromBody] Event updatedEvent)
         {
             bool Login = true;
+            if (HttpContext.Session.GetString("AdminLoggedIn") is null) Login = false; //als er niet is ingelogd zet de login bool op false
+
 
             if (!Login)
             {

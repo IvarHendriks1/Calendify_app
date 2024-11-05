@@ -23,7 +23,8 @@ namespace CalendifyApp.Controllers
         public IActionResult AttendEvent([FromBody] AttendanceDto attendance)
         {
             // Simulatie van een controle voor inloggen (vervang met een echte authenticatiecheck)
-            bool isLoggedIn = true; // Vervang dit met een echte inlogcheck
+            bool isLoggedIn = true;
+            if (HttpContext.Session.GetString("UserLoggedIn") is null) isLoggedIn = false; //als er niet is ingelogd zet de loggedIn bool op false
 
             // Controleer of de gebruiker is ingelogd
             if (!isLoggedIn)
