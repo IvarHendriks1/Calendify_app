@@ -17,39 +17,7 @@ namespace Project.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
 
-            modelBuilder.Entity("Event", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("Admin_approval")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("EventDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Location")
-                        .HasColumnType("TEXT");
-
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Events");
-                });
-
-            modelBuilder.Entity("Project.Models.Admin", b =>
+            modelBuilder.Entity("CalendifyApp.Models.Admin", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,7 +31,7 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -72,43 +40,83 @@ namespace Project.Migrations
                     b.ToTable("Admin");
                 });
 
-            modelBuilder.Entity("Project.Models.Attendance", b =>
+            modelBuilder.Entity("CalendifyApp.Models.Attendance", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("EventId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsPresent")
-                        .HasColumnType("INTEGER");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Attendance");
                 });
 
-            modelBuilder.Entity("Project.Models.Reviews", b =>
+            modelBuilder.Entity("CalendifyApp.Models.Event", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("EventId")
+                    b.Property<bool>("Admin_approval")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("CalendifyApp.Models.Event_Attendance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("EventId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Event_Id")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Feedback")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("Rating")
-                        .HasColumnType("REAL");
+                    b.Property<int>("Rating")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("User_Id")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -117,28 +125,33 @@ namespace Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("event_Attendance");
                 });
 
-            modelBuilder.Entity("Project.Models.User", b =>
+            modelBuilder.Entity("CalendifyApp.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("First_name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Last_name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Recurring_days")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -146,23 +159,36 @@ namespace Project.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Project.Models.Reviews", b =>
+            modelBuilder.Entity("CalendifyApp.Models.Attendance", b =>
                 {
-                    b.HasOne("Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Project.Models.User", "User")
-                        .WithMany()
+                    b.HasOne("CalendifyApp.Models.User", null)
+                        .WithMany("Attendances")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.Navigation("Event");
+            modelBuilder.Entity("CalendifyApp.Models.Event_Attendance", b =>
+                {
+                    b.HasOne("CalendifyApp.Models.Event", null)
+                        .WithMany("Event_Attendances")
+                        .HasForeignKey("EventId");
 
-                    b.Navigation("User");
+                    b.HasOne("CalendifyApp.Models.User", null)
+                        .WithMany("Event_Attendances")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("CalendifyApp.Models.Event", b =>
+                {
+                    b.Navigation("Event_Attendances");
+                });
+
+            modelBuilder.Entity("CalendifyApp.Models.User", b =>
+                {
+                    b.Navigation("Attendances");
+
+                    b.Navigation("Event_Attendances");
                 });
 #pragma warning restore 612, 618
         }
