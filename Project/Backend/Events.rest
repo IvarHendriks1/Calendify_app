@@ -1,0 +1,116 @@
+GET http://localhost:5001/api/Events
+#####
+
+GET http://localhost:5001/api/Events/1
+#####
+
+
+POST http://localhost:5001/api/Events
+Content-Type: application/json
+
+{
+  "Id":5,
+  "Title": "Annual Conference",
+  "Description": "A conference for industry professionals.",
+  "EventDate": "2024-11-15",
+  "StartTime": "09:00:00",
+  "EndTime": "17:00:00",
+  "Location": "Convention Center, Hall A",
+  "AdminApproval": true
+}
+
+####
+
+DELETE http://localhost:5001/api/Events/5
+####
+
+
+PUT http://localhost:5001/api/Events
+Content-Type: application/json 
+
+{
+  "Id":5,
+  "Title": "changed",
+  "Description": "this has been changed",
+  "EventDate": "2024-11-15",
+  "StartTime": "09:00:00",
+  "EndTime": "18:00:00",
+  "Location": "Convention Center, Hall B",
+  "AdminApproval": false
+}
+
+####
+
+POST http://localhost:5001/api/Events/doNotDo_doesntWork
+Content-Type: application/json
+
+{
+  "EventId": 1,
+  "Title": "Annual Conference",
+  "Description": "A conference for industry professionals.",
+  "EventDate": "2024-11-15",
+  "StartTime": "09:00:00",
+  "EndTime": "17:00:00",
+  "Location": "Convention Center, Hall A",
+  "AdminApproval": true,
+  "Event_Attendances": [
+    {
+      "Event_AttendanceId": 101,
+      "Rating": 5,
+      "Feedback": "Great event!",
+      "User": {
+        "UserId": 1,
+        "FirstName": "John",
+        "LastName": "Doe",
+        "Email": "john.doe@example.com",
+        "Password": "encrypted_password_here",
+        "RecuringDays": "mo,tu,we,th,fr",
+        "Attendances": [
+          {
+            "Id": 1,
+            "UserId": 1,
+            "EventId": 1,
+            "IsPresent": true
+          },
+          {
+            "Id": 2,
+            "UserId": 1,
+            "EventId": 2,
+            "IsPresent": false
+          }
+        ],
+        "Event_Attendances": [
+          {
+            "Event_AttendanceId": 101,
+            "Rating": 5,
+            "Feedback": "Great event!",
+            "Event": {
+              "EventId": 1,
+              "Title": "Annual Conference",
+              "Description": "A conference for industry professionals.",
+              "EventDate": "2024-11-15",
+              "StartTime": "09:00:00",
+              "EndTime": "17:00:00",
+              "Location": "Convention Center, Hall A",
+              "AdminApproval": true,
+              "Event_Attendances": []
+            }
+          }
+        ]
+      },
+      "Event": {
+        "EventId": 1,
+        "Title": "Annual Conference",
+        "Description": "A conference for industry professionals.",
+        "EventDate": "2024-11-15",
+        "StartTime": "09:00:00",
+        "EndTime": "17:00:00",
+        "Location": "Convention Center, Hall A",
+        "AdminApproval": true,
+        "Event_Attendances": []
+      }
+    }
+  ]
+}
+
+#####
