@@ -1,2 +1,35 @@
 GET http://localhost:5001/get/1
 ####
+
+GET http://localhost:5001/api/Events/1
+###
+
+POST http://localhost:5001/api/Events
+Content-Type: application/json
+
+{
+  "EventId": 1,
+  "Title": "testing adding an event",
+  "Description": "this event is pure for testing and needs to be removed before launch",
+  "EventDate": "2024-12-05",
+  "StartTime": "10:00:00",
+  "EndTime": "15:00:00",
+  "Location": "Hogeschool Rotterdam Wijnhaven 107",
+  "AdminApproval": true,
+  "Event_Attendances": [
+    {
+      "AttendeeId": 1,
+      "EventId": 1,
+      "Attended": true
+    },
+    {
+      "AttendeeId": 2,
+      "EventId": 1,
+      "Attended": false
+    }
+  ]
+}
+
+######
+
+

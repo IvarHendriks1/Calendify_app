@@ -1,4 +1,4 @@
-using CalendifyApp.Models; 
+using CalendifyApp.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,10 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Register the MyContext DbContext with a SQLite connection string
 builder.Services.AddDbContext<MyContext>(options =>
     options.UseSqlite("Data Source=calendify.db")); // Using SQLite database
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.MapControllers();
 app.Urls.Add("http://localhost:5001");
+
 
 app.MapGet("/hi", () => "Hello pleps!");
 

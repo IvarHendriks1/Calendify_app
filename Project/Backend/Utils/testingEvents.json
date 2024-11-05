@@ -1,0 +1,100 @@
+{
+    "EventId": 1,
+    "Title": "Annual Conference",
+    "Description": "A conference for industry professionals.",
+    "EventDate": "2024-11-15",
+    "StartTime": "09:00:00",
+    "EndTime": "17:00:00",
+    "Location": "Convention Center, Hall A",
+    "AdminApproval": true,
+    "Event_Attendances": [
+        {
+            "Event_AttendanceId": 12,
+            "Rating": 63,
+            "Feedback": "not bad kid",
+            "User": {
+                "UserId": 1,
+                "FirstName": "John",
+                "LastName": "Doe",
+                "Email": "john.doe@example.com",
+                "Password": "encrypted_password_here",
+                "RecuringDays": "mo,tu,we,th,fr",
+                "Attendances": [
+                    {
+                        "Id": 1,
+                        "UserId": 1,
+                        "EventId": 1,
+                        "IsPresent": true
+                    },
+                    {
+                        "Id": 2,
+                        "UserId": 1,
+                        "EventId": 2,
+                        "IsPresent": false
+                    }
+                ],
+                "Event_Attendances":[
+                    
+                ]
+            },
+            "Event": {}
+        }
+    ]
+        "extra": {
+        "Event_AttendanceId": 101,
+        "Rating": 5,
+        "Feedback": "Great event!",
+        "User": {
+            "UserId": 1,
+            "FirstName": "John",
+            "LastName": "Doe",
+            "Email": "john.doe@example.com",
+            "Password": "encrypted_password_here",
+            "RecuringDays": "mo,tu,we,th,fr",
+            "Attendances": [
+                {
+                    "Id": 1,
+                    "UserId": 1,
+                    "EventId": 1,
+                    "IsPresent": true
+                },
+                {
+                    "Id": 2,
+                    "UserId": 1,
+                    "EventId": 2,
+                    "IsPresent": false
+                }
+            ],
+            "Event_Attendances": [
+                {
+                    "Event_AttendanceId": 101,
+                    "Rating": 5,
+                    "Feedback": "Great event!",
+                    "Event": {
+                        "EventId": 1,
+                        "Title": "Annual Conference",
+                        "Description": "A conference for industry professionals.",
+                        "EventDate": "2024-11-15",
+                        "StartTime": "09:00:00",
+                        "EndTime": "17:00:00",
+                        "Location": "Convention Center, Hall A",
+                        "AdminApproval": true,
+                        "Event_Attendances": []
+                    }
+                }
+            ]
+        },
+        "Event": {
+            "EventId": 1,
+            "Title": "Annual Conference",
+            "Description": "A conference for industry professionals.",
+            "EventDate": "2024-11-15",
+            "StartTime": "09:00:00",
+            "EndTime": "17:00:00",
+            "Location": "Convention Center, Hall A",
+            "AdminApproval": true,
+            "Event_Attendances": []
+        }
+    }
+]
+}

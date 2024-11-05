@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using CalendifyApp.Models;
 using System.Linq;
 
-namespace CalendifyApp
+
+namespace CalendifyApp.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class EventsController : ControllerBase
+    [Route("api/Events")]
+    //[controller]
+    public class EventsController : Controller
     {
         private readonly MyContext _context;
 
@@ -15,18 +17,19 @@ namespace CalendifyApp
             _context = context;
         }
 
-        [HttpGet("get")]
-        public IActionResult getEvent([FromQuery] int id = 0)
+        [HttpGet("{id}")]
+        public IActionResult getEvent(int id)
         {
             if (id == 0)
             {
-                return Ok(_context.Events.ToList());
+                return Ok("return all events");
             }
             return Ok($"event with id {id}");
+
         }
 
         [HttpPost]
-        public IActionResult AddEvent([FromBody] Event eventToAdd)
+        public IActionResult AddEvent([FromBody] object objEventToAdd)
         {
             // Simulated login state (replace with actual logic once login is ready)
             bool Login = true;
@@ -36,15 +39,20 @@ namespace CalendifyApp
                 return Unauthorized("User is not logged in.");
             }
 
+            if (objEventToAdd is not Event)
+            {
+                return BadRequest($"{objEventToAdd} \nis not an event");
+            }
+            Event eventToAdd = (Event)objEventToAdd;
             // Check if the event exists
-            var eventExists = _context.Events.Any(e => e.EventId == eventToAdd.EventId);
-            if (!eventExists)
+            var eventExists = _context.Events.FirstOrDefault(e => e.EventId == eventToAdd.EventId);
+            if (eventExists is null)
             {
                 _context.Events.Add(eventToAdd);
                 _context.SaveChanges();
-                return Ok($"{eventToAdd} has been added succesfully");
+                return Ok($"{objEventToAdd} has been added succesfully");
             }
-            else if (eventExists)
+            else if (eventExists is Event)
             {
                 return BadRequest("event already exists");
             }
