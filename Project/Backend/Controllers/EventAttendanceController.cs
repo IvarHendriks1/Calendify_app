@@ -49,3 +49,40 @@
 
             return Ok("Inschrijving succesvol geregistreerd.");
         }
+
+        // GET: Haal de lijst met deelnemers voor een evenement op
+        [HttpGet("attendees/{eventId}")]
+        public IActionResult GetEventAttendees(int eventId)
+        {
+            // Haal de datum van het evenement op
+            var eventDate = _context.Events.FirstOrDefault(e => e.Id == eventId)?.Date;
+
+            // Controleer of het evenement bestaat
+            if (eventDate == null)
+            {
+                return NotFound("Evenement niet gevonden.");
+            }
+
+            // Haal de lijst met deelnemers op voor de opgegeven datum
+            var eventAttendees = _context.Attendance
+                .Where(a => a.Date == eventDate)
+                .Join(
+                    _context.Users,
+                    attendance => attendance.UserId,
+                    user => user.Id,
+                    (attendance, user) => new
+                    {
+                        attendance.UserId,
+                        UserName = user.First_name + " " + user.Last_name
+                    }
+                )
+                .ToList();
+
+            // Controleer of er geen deelnemers zijn gevonden
+            if (!eventAttendees.Any())
+            {
+                return NotFound("Geen deelnemers gevonden voor dit evenement.");
+            }
+
+            return Ok(eventAttendees);
+        }
