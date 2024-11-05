@@ -19,33 +19,36 @@ public class LoginService : ILoginService
 
     public LoginStatus CheckPassword(string username, string inputPassword)
     {
-        DbSeeder.Seed(_context);
         // TODO: Make this method check the password with what is in the database
-        if (_context.Admin.Any(x => x.UserName == username)){
+        if (_context.Admin.Any(x => x.UserName == username))
+        {
             Admin admin = _context.Admin.Where(x => x.UserName == username).Single();
-            if (admin.Password == EncryptionHelper.EncryptPassword(inputPassword)){
+            if (admin.Password == EncryptionHelper.EncryptPassword(inputPassword))
+            {
                 return LoginStatus.Success;
             }
             return LoginStatus.IncorrectPassword;
 
         }
-        
+
         return LoginStatus.IncorrectUsername;
     }
 
     public LoginStatus CheckUserPassword(string username, string inputPassword)
     {
 
-        if (_context.Users.Any(x => x.First_name == username)){
+        if (_context.Users.Any(x => x.First_name == username))
+        {
             User user = _context.Users.Where(x => x.First_name == username).Single();
-            if (user.Password == EncryptionHelper.EncryptPassword(inputPassword)){
+            if (user.Password == EncryptionHelper.EncryptPassword(inputPassword))
+            {
                 return LoginStatus.Success;
             }
             return LoginStatus.IncorrectPassword;
 
         }
 
-        
+
         return LoginStatus.IncorrectUsername;
     }
 }
