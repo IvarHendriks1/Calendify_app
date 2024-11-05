@@ -1,7 +1,18 @@
-
+#test if there is an connection
 GET http://localhost:5001/hi
 #######
 
+#Invallid input
+POST http://localhost:5001/api/Login
+Content-Type: application/json
+
+{
+  "username": null,
+  "password": null
+}
+################
+
+#Wrong input
 POST http://localhost:5001/api/Login
 Content-Type: application/json
 
@@ -10,6 +21,8 @@ Content-Type: application/json
   "password": "idontknow"
 }
 ################
+
+#Admin Login
 POST http://localhost:5001/api/Login
 Content-Type: application/json
 
@@ -19,6 +32,7 @@ Content-Type: application/json
 }
 ################
 
+#User login
 POST http://localhost:5001/api/Login
 Content-Type: application/json
 
@@ -29,15 +43,20 @@ Content-Type: application/json
 ################
 
 
-
+#check if the Admin is logged in
 GET http://localhost:5001/api/IsAdminLoggedIn
 ###################
 
+
+#check if the User is logged in
 GET http://localhost:5001/api/IsUserLoggedIn
 ###################
 
+#logout User
 GET http://localhost:5001/api/Logout
 ###################
 
+
+#logout Admin
 GET http://localhost:5001/api/AdminLogout
 ###################
