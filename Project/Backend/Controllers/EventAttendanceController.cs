@@ -1,3 +1,23 @@
+using CalendifyApp.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+
+namespace CalendifyApp.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class EventAttendanceController : ControllerBase
+    {
+        private readonly MyContext _context;
+
+        // Constructor om de database context te injecteren
+        public EventAttendanceController(MyContext context)
+        {
+            _context = context;
+        }
+
         // POST: Gebruiker inschrijven voor een evenement
         [HttpPost("attend")]
         public IActionResult AttendEvent([FromBody] AttendanceDto attendance)
