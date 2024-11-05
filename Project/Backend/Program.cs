@@ -1,4 +1,5 @@
-using CalendifyApp; 
+using CalendifyApp;
+using CalendifyApp.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
