@@ -1,7 +1,7 @@
 namespace CalendifyApp.Models;
 public class Event
 {
-    public int EventId { get; set; }
+    public int Id { get; set; }
 
     public required string Title { get; set; }
 
@@ -15,7 +15,7 @@ public class Event
 
     public required string Location { get; set; }
 
-    public bool AdminApproval { get; set; }
+    public bool Admin_approval { get; set; }
 
     public required List<Event_Attendance> Event_Attendances { get; set; }
 }
