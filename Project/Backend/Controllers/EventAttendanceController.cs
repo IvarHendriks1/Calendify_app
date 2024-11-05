@@ -86,3 +86,33 @@
 
             return Ok(eventAttendees);
         }
+
+        // DELETE: Verwijder een inschrijving voor een evenement
+        [HttpDelete("remove")]
+        public IActionResult RemoveAttendance([FromBody] AttendanceDto attendance)
+        {
+            // Haal het evenement op om de datum te krijgen
+            var eventEntity = _context.Events.FirstOrDefault(e => e.Id == attendance.EventId);
+            if (eventEntity == null)
+            {
+                return NotFound("Evenement niet gevonden.");
+            }
+
+            // Zoek de inschrijving van de gebruiker voor het opgegeven evenement
+            var attendanceRecord = _context.Attendance
+                .FirstOrDefault(a => a.UserId == attendance.UserId && a.Date == eventEntity.Date);
+
+            // Controleer of de inschrijving bestaat
+            if (attendanceRecord == null)
+            {
+                return NotFound("Inschrijving niet gevonden.");
+            }
+
+            // Verwijder de inschrijving en sla de wijzigingen op
+            _context.Attendance.Remove(attendanceRecord);
+            _context.SaveChanges();
+
+            return Ok("Inschrijving succesvol verwijderd.");
+        }
+    }
+}
