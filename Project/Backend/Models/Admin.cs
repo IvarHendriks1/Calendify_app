@@ -1,4 +1,4 @@
-﻿namespace Project.Models
+﻿namespace CalendifyApp.Models
 {
     public class Admin
     {
@@ -8,5 +8,7 @@
         public required string Password { get; set; }
 
         public required string Email { get; set; }
+
+
     }
 }
