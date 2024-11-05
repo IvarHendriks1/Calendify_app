@@ -7,8 +7,8 @@ POST http://localhost:5001/api/Login
 Content-Type: application/json
 
 {
-  "username": "yourUsername",
-  "password": "yourPassword"
+  "username": "admin",
+  "password": "password123"
 }
 ################
 
