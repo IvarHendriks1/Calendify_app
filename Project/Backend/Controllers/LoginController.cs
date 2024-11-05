@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using CalendifyApp.Services;
+using CalendifyApp.Models;
 
 namespace CalendifyApp.Controllers;
 
@@ -10,8 +11,7 @@ public class LoginController : Controller
 {
     private readonly ILoginService _loginService;
 
-
-    public LoginController(ILoginService loginService)
+    public LoginController(ILoginService loginService, MyContext context)
     {
         _loginService = loginService;
     }
@@ -19,7 +19,8 @@ public class LoginController : Controller
     [HttpPost("Login")]
     public IActionResult Login([FromBody] LoginBody loginBody)
     {
-        // TODO: Impelement login method
+        //Admin admin = _loginService.();
+
         return Unauthorized("Incorrect password");
     }
 

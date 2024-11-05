@@ -14,7 +14,6 @@ app.Urls.Add("http://localhost:5001");
 app.MapGet("/hi", () => "Hello pleps!");
 
 // Ensure that MyContext is injected via dependency injection, not instantiated manually.
-app.MapPost("/Login", (string user, string pass) => "Login not implemented yet.");
 
 // Run the application
 app.Run();
