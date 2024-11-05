@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CalendifyApp.Migrations
+namespace Project.Migrations
 {
     [DbContext(typeof(MyContext))]
     [Migration("20241016110945_m1")]
