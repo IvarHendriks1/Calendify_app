@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using CalendifyApp.Models;
 using System.Linq;
+using CalendifyApp.Filters;
+using System.Data.Entity.Core.Objects;
 
 
 namespace CalendifyApp.Controllers
@@ -17,63 +19,69 @@ namespace CalendifyApp.Controllers
             _context = context;
         }
 
-
+        [AuthorizationFilter]
         [HttpGet]
         public IActionResult getEvents()
         {
-            bool Login = true;
-            if (HttpContext.Session.GetString("UserLoggedIn") is null) Login = false; //als er niet is ingelogd zet de login bool op false
-
-            if (!Login)
-            {
-                return Unauthorized("User is not logged in.");
-            }
-
             if (_context.Events.Count() != 0)
             {
-                return Ok(_context.Events.ToList());
+                Dictionary<string, object> eventData = new() { };
+                foreach (Event eve in _context.Events)
+                {
+                    var eventUserData = new Dictionary<string, object>
+                    {
+                        { "reviews", _context.event_Attendance.Where(a => a.Event_Id == eve.Id).ToList() },
+                        { "attendees", _context.Attendance.Where(a => a.Id == eve.Id).ToList() }
+                    };
+
+                    // Create the event details dictionary
+                    var eventDetails = new Dictionary<string, object>
+                    {
+                        { "event", eve },
+                        { "event data", eventUserData }
+                    };
+                    eventData.Add($"event {eve.Id}", eventDetails);
+                }
+                return Ok(eventData);
             }
             return BadRequest("there are no events in the database");
-
         }
 
+        [AuthorizationFilter]
         [HttpGet("{id}")]
         public IActionResult getEvent(int id)
         {
-            bool Login = true;
-            if (HttpContext.Session.GetString("UserLoggedIn") is null) Login = false; //als er niet is ingelogd zet de login bool op false
-
-
-            if (!Login)
-            {
-                return Unauthorized("User is not logged in.");
-            }
-
             if (_context.Events.Count() != 0)
             {
-
-                Event? eventItem = _context.Events.SingleOrDefault(x => x.Id == id);
-                if (eventItem == null)
+                Event? eve = _context.Events.Where(e => e.Id == id).FirstOrDefault();
+                if (eve == null)
                 {
-                    return NotFound($"Could not find Event with id {id}");
+                    return BadRequest("event doesn't exist");
                 }
-                return Ok(eventItem);
+
+                var eventUserData = new Dictionary<string, object>
+                    {
+                        { "reviews", _context.event_Attendance.Where(a => a.Event_Id == eve.Id).ToList() },
+                        { "attendees", _context.Attendance.Where(a => a.Id == eve.Id).ToList() }
+                    };
+
+                // Create the event details dictionary
+                var eventDetails = new Dictionary<string, object>
+                    {
+                        { "event", eve },
+                        { "event data", eventUserData }
+                    };
+                Dictionary<string, object> eventData = new() { { $"event {eve.Id}", eventDetails } };
+                return Ok(eventData);
             }
             return BadRequest("there are no events in the database");
         }
 
+        [AdminFilter]
         [HttpPost]
         public IActionResult AddEvent([FromBody] Event eventToAdd)
 
         {
-            // Simulated login state (replace with actual logic once login is ready)
-            bool Login = true;
-
-            if (!Login)
-            {
-                return Unauthorized("Admin is not logged in.");
-            }
-
             if (eventToAdd is not Event)
             {
                 return BadRequest($"{eventToAdd} \nis not an event");
@@ -97,15 +105,10 @@ namespace CalendifyApp.Controllers
             return BadRequest("given event could not be added");
         }
 
+        [AdminFilter]
         [HttpDelete("{id}")]
         public IActionResult DeleteEvent(int id)
         {
-            bool Login = true;
-
-            if (!Login)
-            {
-                return Unauthorized("Admin is not logged in.");
-            }
             var eventToDelete = _context.Events.FirstOrDefault(e => e.Id == id);
             if (eventToDelete is not null)
             {
@@ -123,17 +126,10 @@ namespace CalendifyApp.Controllers
             }
         }
 
+        [AdminFilter]
         [HttpPut]
         public IActionResult updateEvent([FromBody] Event updatedEvent)
         {
-            bool Login = true;
-
-            if (!Login)
-            {
-                return Unauthorized("Admin is not logged in.");
-            }
-
-
             var eventToUpdate = _context.Events.FirstOrDefault(e => e.Id == updatedEvent.Id);
             if (eventToUpdate is not null)
             {
