@@ -21,22 +21,27 @@ namespace CalendifyApp.Controllers
         [HttpGet]
         public IActionResult getEvents()
         {
-            return Ok(_context.Events.ToList());
+            bool Login = true;
+            if (HttpContext.Session.GetString("UserLoggedIn") is null) Login = false; //als er niet is ingelogd zet de login bool op false
+
+            if (!Login)
+            {
+                return Unauthorized("User is not logged in.");
+            }
+
+            if (_context.Events.Count() != 0)
+            {
+                return Ok(_context.Events.ToList());
+            }
+            return BadRequest("there are no events in the database");
+
         }
 
         [HttpGet("{id}")]
         public IActionResult getEvent(int id)
         {
-            return Ok(_context.Events.Where(x => x.Id == id).Single());
-        }
-
-        [HttpPost]
-        public IActionResult AddEvent([FromBody] Event objEventToAdd)
-
-        {
-
             bool Login = true;
-            if (HttpContext.Session.GetString("AdminLoggedIn") is null) Login = false; //als er niet is ingelogd zet de login bool op false
+            if (HttpContext.Session.GetString("UserLoggedIn") is null) Login = false; //als er niet is ingelogd zet de login bool op false
 
 
             if (!Login)
@@ -44,13 +49,36 @@ namespace CalendifyApp.Controllers
                 return Unauthorized("User is not logged in.");
             }
 
-            Event eventToAdd = (Event)objEventToAdd;
+            if (_context.Events.Count() != 0)
+            {
+
+                Event? eventItem = _context.Events.SingleOrDefault(x => x.Id == id);
+                if (eventItem == null)
+                {
+                    return NotFound($"Could not find Event with id {id}");
+                }
+                return Ok(eventItem);
+            }
+            return BadRequest("there are no events in the database");
+        }
+
+        [HttpPost]
+        public IActionResult AddEvent([FromBody] Event eventToAdd)
+
+        {
+            // Simulated login state (replace with actual logic once login is ready)
+            bool Login = true;
+
+            if (!Login)
+            {
+                return Unauthorized("Admin is not logged in.");
+            }
+
             if (eventToAdd is not Event)
             {
-                return BadRequest($"{objEventToAdd} \nis not an event");
+                return BadRequest($"{eventToAdd} \nis not an event");
             }
-            //Event eventToAdd = (Event)objEventToAdd;
-            // Check if the event exists
+
             var eventExists = _context.Events.FirstOrDefault(e => e.Id == eventToAdd.Id);
             if (eventExists is null)
             {
@@ -73,12 +101,10 @@ namespace CalendifyApp.Controllers
         public IActionResult DeleteEvent(int id)
         {
             bool Login = true;
-            if (HttpContext.Session.GetString("AdminLoggedIn") is null) Login = false; //als er niet is ingelogd zet de login bool op false
-
 
             if (!Login)
             {
-                return Unauthorized("User is not logged in.");
+                return Unauthorized("Admin is not logged in.");
             }
             var eventToDelete = _context.Events.FirstOrDefault(e => e.Id == id);
             if (eventToDelete is not null)
@@ -101,12 +127,10 @@ namespace CalendifyApp.Controllers
         public IActionResult updateEvent([FromBody] Event updatedEvent)
         {
             bool Login = true;
-            if (HttpContext.Session.GetString("AdminLoggedIn") is null) Login = false; //als er niet is ingelogd zet de login bool op false
-
 
             if (!Login)
             {
-                return Unauthorized("User is not logged in.");
+                return Unauthorized("Admin is not logged in.");
             }
 
 
