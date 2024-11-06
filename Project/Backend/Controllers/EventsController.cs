@@ -77,6 +77,7 @@ namespace CalendifyApp.Controllers
             return BadRequest("there are no events in the database");
         }
 
+
         [AdminFilter]
         [HttpPost]
         public IActionResult AddEvent([FromBody] Event eventToAdd)
