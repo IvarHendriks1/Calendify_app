@@ -26,6 +26,8 @@ Content-Type: application/json
     "eventId": 1
 }
 
+### ADMIN ONLY ---------------------------------------------------
+
 ### Test GET: List attendees for an event (valid event)
 GET http://localhost:5001/api/EventAttendance/attendees/1
 
@@ -34,6 +36,8 @@ GET http://localhost:5001/api/EventAttendance/attendees/999
 
 ### Test GET: List attendees for an event (no attendees found)
 GET http://localhost:5001/api/EventAttendance/attendees/2
+
+### --------------------------------------------------------------
 
 ### Test DELETE: Remove attendance (valid)
 DELETE http://localhost:5001/api/EventAttendance/remove
