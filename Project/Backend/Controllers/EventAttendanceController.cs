@@ -12,130 +12,142 @@ namespace CalendifyApp.Controllers
     {
         private readonly MyContext _context;
 
-        // Constructor om de database context te injecteren
+        // Constructor to inject the database context
         public EventAttendanceController(MyContext context)
         {
             _context = context;
         }
 
-        // POST: Gebruiker inschrijven voor een evenement
+        // Method to check if user is logged in
+        private bool IsUserLoggedIn()
+        {
+            return HttpContext.Session.GetString("UserLoggedIn") != null;
+        }
+
+        // POST: User attends an event
         [HttpPost("attend")]
         public IActionResult AttendEvent([FromBody] AttendanceDto attendance)
         {
-            // Simulatie van een controle voor inloggen (vervang met een echte authenticatiecheck)
-            bool isLoggedIn = true;
-            if (HttpContext.Session.GetString("UserLoggedIn") is null) isLoggedIn = false; //als er niet is ingelogd zet de loggedIn bool op false
-
-            // Controleer of de gebruiker is ingelogd
-            if (!isLoggedIn)
+            // Check if user is logged in
+            if (!IsUserLoggedIn())
             {
-                return Unauthorized("Gebruiker is niet ingelogd.");
+                return Unauthorized("User is not logged in.");
             }
 
-            // Zoek de gebruiker en het evenement in de database
+            // Find the user and event in the database
             var user = _context.Users.FirstOrDefault(u => u.Id == attendance.UserId);
             var eventEntity = _context.Events.FirstOrDefault(e => e.Id == attendance.EventId);
 
-            // Controleer of de gebruiker of het evenement niet bestaat
+            // Check if the user or event does not exist
             if (user == null || eventEntity == null)
             {
-                return NotFound("Gebruiker of evenement niet gevonden.");
+                return NotFound("User or event not found.");
             }
 
-            // Controleer of het evenement al is gestart of voorbij is
+            // Check if the event has already started or ended
             if (eventEntity.Date.ToDateTime(eventEntity.StartTime) < DateTime.Now)
             {
-                return BadRequest("Het evenement is al begonnen of voorbij.");
+                return BadRequest("The event has already started or ended.");
             }
 
-            // Controleer of de gebruiker al voor dit evenement is ingeschreven
+            // Check if the user is already registered for this event
             var existingAttendance = _context.Attendance
                 .FirstOrDefault(a => a.UserId == attendance.UserId && a.Date == eventEntity.Date);
 
             if (existingAttendance != null)
             {
-                return BadRequest("U heeft zich al ingeschreven voor dit evenement.");
+                return BadRequest("You are already registered for this event.");
             }
 
-            // Voeg een nieuwe inschrijving toe
+            // Add new attendance
             var newAttendance = new Attendance
             {
                 UserId = attendance.UserId,
-                Date = eventEntity.Date // Stel de datum van het evenement in als de inschrijvingsdatum
+                Date = eventEntity.Date // Set the event date as the attendance date
             };
 
-            // Sla de nieuwe inschrijving op in de database
+            // Save the new attendance in the database
             _context.Attendance.Add(newAttendance);
             _context.SaveChanges();
 
-            return Ok("Inschrijving succesvol geregistreerd.");
+            return Ok("Registration successfully recorded.");
         }
 
-        // GET: Haal de lijst met deelnemers voor een evenement op
+        // GET: Retrieve list of attendees for an event
         [HttpGet("attendees/{eventId}")]
         public IActionResult GetEventAttendees(int eventId)
         {
-            // Haal de datum van het evenement op
-            var eventDate = _context.Events.FirstOrDefault(e => e.Id == eventId)?.Date;
-
-            // Controleer of het evenement bestaat
-            if (eventDate == null)
+            // Check if user is logged in
+            if (!IsUserLoggedIn())
             {
-                return NotFound("Evenement niet gevonden.");
+                return Unauthorized("User is not logged in.");
             }
 
-            // Haal de lijst met deelnemers op voor de opgegeven datum
-            // Haal deelnemers op voor de opgegeven datum
+            // Retrieve the event date
+            var eventDate = _context.Events.FirstOrDefault(e => e.Id == eventId)?.Date;
+
+            // Check if the event exists
+            if (eventDate == null)
+            {
+                return NotFound("Event not found.");
+            }
+
+            // Retrieve list of attendees for the specified date
             var eventAttendees = _context.Attendance
-                .Where(a => a.Date == eventDate) // Filter op evenementdatum
+                .Where(a => a.Date == eventDate) // Filter by event date
                 .Join(
-                    _context.Users, // Join met Users tabel
-                    attendance => attendance.UserId, // Koppel op UserId
-                    user => user.Id, // Koppel op Id van de gebruiker
+                    _context.Users, // Join with Users table
+                    attendance => attendance.UserId, // Match on UserId
+                    user => user.Id, // Match on Id from Users
                     (attendance, user) => new
                     {
-                        attendance.UserId, // UserId van de deelnemer
-                        UserName = user.First_name + " " + user.Last_name // Volledige naam van de gebruiker
+                        attendance.UserId, // UserId of the attendee
+                        UserName = user.First_name + " " + user.Last_name // Full name of the user
                     }
                 )
-                .ToList(); // Converteer naar lijst
+                .ToList(); // Convert to list
 
-
-            // Controleer of er geen deelnemers zijn gevonden
+            // Check if no attendees were found
             if (!eventAttendees.Any())
             {
-                return NotFound("Geen deelnemers gevonden voor dit evenement.");
+                return NotFound("No attendees found for this event.");
             }
 
             return Ok(eventAttendees);
         }
 
-        // DELETE: Verwijder een inschrijving voor een evenement
+        // DELETE: Remove registration for an event
         [HttpDelete("remove")]
         public IActionResult RemoveAttendance([FromBody] AttendanceDto attendance)
         {
-            // Haal het evenement op om de datum te krijgen
+            // Check if user is logged in
+            if (!IsUserLoggedIn())
+            {
+                return Unauthorized("User is not logged in.");
+            }
+
+            // Retrieve the event to get the date
             var eventEntity = _context.Events.FirstOrDefault(e => e.Id == attendance.EventId);
             if (eventEntity == null)
             {
-                return NotFound("Evenement niet gevonden.");
+                return NotFound("Event not found.");
             }
 
-            // Zoek de inschrijving van de gebruiker voor het opgegeven evenement
+            // Find the user's attendance record for the specified event
             var attendanceRecord = _context.Attendance
                 .FirstOrDefault(a => a.UserId == attendance.UserId && a.Date == eventEntity.Date);
 
-            // Controleer of de inschrijving bestaat
+            // Check if the attendance record exists
             if (attendanceRecord == null)
             {
-                return NotFound("Inschrijving niet gevonden.");
+                return NotFound("Attendance not found.");
             }
 
-            // Verwijder de inschrijving en sla de wijzigingen op
+            // Remove the attendance and save changes
             _context.Attendance.Remove(attendanceRecord);
             _context.SaveChanges();
 
-            return Ok("Inschrijving succesvol verwijderd.");
+            return Ok("Registration successfully removed.");
         }
     }
 }
