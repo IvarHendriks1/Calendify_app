@@ -2,9 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using CalendifyApp.Models;
+using CalendifyApp.Filters; // Import the filter
+
 
 namespace CalendifyApp.Controllers
-{
+{   
+    [AuthorizationFilter]
     [ApiController]
     [Route("[controller]")]
     public class OfficeAttendanceController : ControllerBase
