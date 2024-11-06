@@ -60,14 +60,9 @@ namespace CalendifyApp.Controllers
 
         // GET: Retrieve list of attendees for an event
         [HttpGet("attendees/{eventId}")]
+        [AdminFilter] // Apply filter so only admins can access this endpoint
         public IActionResult GetEventAttendees(int eventId)
         {
-            // Check if the user is logged in as an admin
-            if (HttpContext.Session.GetString("AdminLoggedIn") is null)
-            {
-                return Unauthorized("Admin access is required to view event attendees.");
-            }
-
             var eventDate = _context.Events.FirstOrDefault(e => e.Id == eventId)?.Date;
 
             if (eventDate == null)
