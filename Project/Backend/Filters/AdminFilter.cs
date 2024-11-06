@@ -1,19 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Threading.Tasks;
 
-namespace CalendifyApp.Filters{
-    public class AdminFilter : Attribute, IAsyncActionFilter {
+namespace CalendifyApp.Filters
+{
+    public class AdminFilter : Attribute, IAsyncActionFilter
+    {
         public async Task OnActionExecutionAsync(
-            ActionExecutingContext actionContext, ActionExecutionDelegate next)
+            ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var context = actionContext.HttpContext;
-
-            if (context.Session.GetString("AdminLoggedIn") is null)
+            // Check if the admin is logged in by verifying the session key
+            if (context.HttpContext.Session.GetString("AdminLoggedIn") is null)
             {
-                context.Response.StatusCode = 401;
+                // Set response status to 401 (Unauthorized) and provide a plain text message
+                context.HttpContext.Response.StatusCode = 401;
+                await context.HttpContext.Response.WriteAsync("You are not authorized. Admin access is required.");
                 return;
             }
 
+            // Proceed to the next action if authorized
             await next();
         }
     }
