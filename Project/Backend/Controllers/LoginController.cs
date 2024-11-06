@@ -66,7 +66,7 @@ public class LoginController : Controller
         HttpContext.Session.Remove("UserLoggedIn");
         return Ok("Logged out");
     }
-    [AuthorizationFilter]
+    [AdminFilter]
     [HttpGet("AdminLogout")]
     public IActionResult AdminLogout()
     {
