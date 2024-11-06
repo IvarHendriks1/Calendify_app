@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using CalendifyApp.Services;
 using CalendifyApp.Models;
+using CalendifyApp.Filters;
 
 namespace CalendifyApp.Controllers;
 
@@ -58,14 +59,14 @@ public class LoginController : Controller
         return Ok($"{HttpContext.Session.GetString("UserLoggedIn")}");
 
     }
-
+    [AuthorizationFilter]
     [HttpGet("Logout")]
     public IActionResult Logout()
     {
         HttpContext.Session.Remove("UserLoggedIn");
         return Ok("Logged out");
     }
-
+    [AuthorizationFilter]
     [HttpGet("AdminLogout")]
     public IActionResult AdminLogout()
     {
