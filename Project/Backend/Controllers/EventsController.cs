@@ -77,19 +77,12 @@ namespace CalendifyApp.Controllers
             return BadRequest("there are no events in the database");
         }
 
-        //[AdminFilter]
+
+        [AdminFilter]
         [HttpPost]
         public IActionResult AddEvent([FromBody] Event eventToAdd)
 
         {
-            // Simulated login state (replace with actual logic once login is ready)
-            bool Login = true;
-            if (HttpContext.Session.GetString("AdminLoggedIn") is null) Login = false;
-            if (!Login)
-            {
-                return Unauthorized("Admin is not logged in.");
-            }
-
             if (eventToAdd is not Event)
             {
                 return BadRequest($"{eventToAdd} \nis not an event");
@@ -113,15 +106,10 @@ namespace CalendifyApp.Controllers
             return BadRequest("given event could not be added");
         }
 
+        [AdminFilter]
         [HttpDelete("{id}")]
         public IActionResult DeleteEvent(int id)
         {
-            bool Login = true;
-            if (HttpContext.Session.GetString("AdminLoggedIn") is null) Login = false;
-            if (!Login)
-            {
-                return Unauthorized("Admin is not logged in.");
-            }
             var eventToDelete = _context.Events.FirstOrDefault(e => e.Id == id);
             if (eventToDelete is not null)
             {
@@ -139,17 +127,10 @@ namespace CalendifyApp.Controllers
             }
         }
 
+        [AdminFilter]
         [HttpPut]
         public IActionResult updateEvent([FromBody] Event updatedEvent)
         {
-            bool Login = true;
-            if (HttpContext.Session.GetString("AdminLoggedIn") is null) Login = false;
-            if (!Login)
-            {
-                return Unauthorized("Admin is not logged in.");
-            }
-
-
             var eventToUpdate = _context.Events.FirstOrDefault(e => e.Id == updatedEvent.Id);
             if (eventToUpdate is not null)
             {

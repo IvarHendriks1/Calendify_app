@@ -29,7 +29,7 @@ POST http://localhost:5001/api/Events
 Content-Type: application/json
 
 {
-  "Id":5,
+  "Id":3,
   "Title": "Annual Conference",
   "Description": "A conference for industry professionals.",
   "EventDate": "2024-11-15",
@@ -41,7 +41,7 @@ Content-Type: application/json
 
 ####
 
-DELETE http://localhost:5001/api/Events/5
+DELETE http://localhost:5001/api/Events/3
 ####
 
 
@@ -49,7 +49,7 @@ PUT http://localhost:5001/api/Events
 Content-Type: application/json 
 
 {
-  "Id":5,
+  "Id":3,
   "Title": "changed",
   "Description": "this has been changed",
   "EventDate": "2024-11-15",
