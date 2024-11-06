@@ -1,3 +1,23 @@
+#Admin Login
+POST http://localhost:5001/api/Login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password123"
+}
+################
+
+#User login
+POST http://localhost:5001/api/Login
+Content-Type: application/json
+
+{
+  "username": "John",
+  "password": "password"
+}
+################
+
 GET http://localhost:5001/api/Events
 #####
 
