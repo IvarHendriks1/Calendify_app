@@ -21,7 +21,7 @@ Content-Type: application/json
 GET http://localhost:5001/api/Events
 #####
 
-GET http://localhost:5001/api/Events/1
+GET http://localhost:5001/api/Events/2
 #####
 
 
