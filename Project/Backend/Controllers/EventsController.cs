@@ -34,7 +34,6 @@ namespace CalendifyApp.Controllers
                         { "attendees", _context.Attendance.Where(a => a.Id == eve.Id).ToList() }
                     };
 
-                    // Create the event details dictionary
                     var eventDetails = new Dictionary<string, object>
                     {
                         { "event", eve },
@@ -149,5 +148,44 @@ namespace CalendifyApp.Controllers
                 return BadRequest($"event {updatedEvent.Id} doesn't exists");
             }
         }
+
+        [AuthorizationFilter]
+        [HttpGet("review")]
+        public IActionResult watchReviews()
+        {
+            if (_context.event_Attendance.Count() == 0)
+            {
+                return BadRequest("there are no reviews");
+            }
+
+            return Ok(_context.event_Attendance.ToList());
+        }
+
+
+        [AuthorizationFilter]
+        [HttpPost("review")]
+        public IActionResult addReview([FromBody] Event_Attendance review)
+        {
+            if (_context.Events.Count() == 0)
+            {
+                return BadRequest("There are no events");
+            }
+
+            Event? eve = _context.Events.Where(e => e.Id == review.Event_Id).FirstOrDefault();
+            if (eve == null)
+            {
+                return BadRequest("event doesn't exist");
+            }
+            if (_context.event_Attendance.Contains(review) ||
+            _context.event_Attendance.FirstOrDefault(r => r.User_Id == review.User_Id) != null)
+            {
+                return BadRequest("review already exists");
+            }
+            _context.event_Attendance.Add(review);
+            _context.SaveChanges();
+            return Ok(new { message = "Review has been added", user_review = review });
+        }
+
+
     }
 }
