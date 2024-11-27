@@ -41,7 +41,7 @@ Content-Type: application/json
 
 ####
 
-DELETE http://localhost:5001/api/Events/2
+DELETE http://localhost:5001/api/Events/3
 ####
 
 
