@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IEventAttendanceService, EventAttendanceService>();
 builder.Services.AddDistributedMemoryCache(); // For session storage
 builder.Services.AddSession(options =>
 {
