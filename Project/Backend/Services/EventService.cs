@@ -1,5 +1,6 @@
 using CalendifyApp.Models;
 using CalendifyApp.Utils;
+using CalendifyApp.Controllers;
 
 namespace CalendifyApp.Services;
 
@@ -88,26 +89,56 @@ public class EventService : IEventService
         Event? eventToUpdate = _context.Events.FirstOrDefault(e => e.Id == eve.Id);
         if (eventToUpdate is not null)
         {
-            _context.Events.Remove(eventToUpdate);
-            _context.Events.Add(eve);
+            eventToUpdate.Title = eve.Title;
+            eventToUpdate.Description = eve.Description;
+            eventToUpdate.Date = eve.Date;
+            eventToUpdate.StartTime = eve.StartTime;
+            eventToUpdate.EndTime = eve.EndTime;
+            eventToUpdate.Location = eve.Location;
+            eventToUpdate.Admin_approval = eve.Admin_approval;
+
             _context.SaveChanges();
-            return eve;
+            return eventToUpdate;
         }
-        else
-        {
-            return null;//$"event {eve.Id} doesn't exists";
-        }
+        return null;
     }
+
     public Event? deleteEvent(int id)
     {
+        var eventToDelete = _context.Events.FirstOrDefault(e => e.Id == id);
+        if (eventToDelete is not null)
+        {
+            _context.Events.Remove(eventToDelete);
+            _context.SaveChanges();
+            return eventToDelete;
+        }
         return null;
+
     }
     public List<Event_Attendance>? allReviews()
     {
-        return null;
+        if (_context.event_Attendance.Count() == 0) return null;
+        return _context.event_Attendance.ToList();
     }
-    public Event_Attendance? postReview(Event_Attendance review)
+    public string PostReview(Event_Attendance review)
     {
-        return null;
+        if (_context.Events.Count() == 0)
+        {
+            return "There are no events";
+        }
+
+        Event? eve = _context.Events.Where(e => e.Id == review.Event_Id).FirstOrDefault();
+        if (eve == null)
+        {
+            return "event doesn't exist";
+        }
+        if (_context.event_Attendance.Contains(review) ||
+        _context.event_Attendance.FirstOrDefault(r => r.User_Id == review.User_Id) != null)
+        {
+            return "review already exists";
+        }
+        _context.event_Attendance.Add(review);
+        _context.SaveChanges();
+        return "succes";
     }
 }

@@ -9,6 +9,5 @@ public interface IEventService
     public Event? putEvent(Event eve);
     public Event? deleteEvent(int id);
     public List<Event_Attendance>? allReviews();
-    public Event_Attendance? postReview(Event_Attendance review);
-
+    public string PostReview(Event_Attendance review);
 }
