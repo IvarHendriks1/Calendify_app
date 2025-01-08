@@ -33,7 +33,7 @@ namespace CalendifyApp.Controllers
                 return NotFound("User or event not found.");
             }
 
-            if (eventEntity.Date.ToDateTime(eventEntity.StartTime) < DateTime.Now)
+            if (eventEntity.Date.Add(eventEntity.StartTime) < DateTime.Now)
             {
                 return BadRequest("The event has already started or ended.");
             }
