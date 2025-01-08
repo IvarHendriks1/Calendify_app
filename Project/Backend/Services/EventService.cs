@@ -22,7 +22,7 @@ public class EventService : IEventService
             {
                 var eventUserData = new Dictionary<string, object>
                     {
-                        { "reviews", _context.event_Attendance.Where(a => a.Event_Id == eve.Id).ToList() },
+                        { "reviews", _context.EventAttendances.Where(a => a.EventId == eve.Id).ToList() },
                         { "attendees", _context.Attendance.Where(a => a.Id == eve.Id).ToList() }
                     };
 
@@ -49,7 +49,7 @@ public class EventService : IEventService
 
             var eventUserData = new Dictionary<string, object>
                     {
-                        { "reviews", _context.event_Attendance.Where(a => a.Event_Id == eve.Id).ToList() },
+                        { "reviews", _context.EventAttendances.Where(a => a.EventId == eve.Id).ToList() },
                         { "attendees", _context.Attendance.Where(a => a.Id == eve.Id).ToList() }
                     };
 
@@ -95,7 +95,7 @@ public class EventService : IEventService
             eventToUpdate.StartTime = eve.StartTime;
             eventToUpdate.EndTime = eve.EndTime;
             eventToUpdate.Location = eve.Location;
-            eventToUpdate.Admin_approval = eve.Admin_approval;
+            //eventToUpdate.Admin_approval = eve.Admin_approval;
 
             _context.SaveChanges();
             return eventToUpdate;
@@ -115,29 +115,29 @@ public class EventService : IEventService
         return null;
 
     }
-    public List<Event_Attendance>? allReviews()
+    public List<EventAttendance>? allReviews()
     {
-        if (_context.event_Attendance.Count() == 0) return null;
-        return _context.event_Attendance.ToList();
+        if (_context.EventAttendances.Count() == 0) return null;
+        return _context.EventAttendances.ToList();
     }
-    public string PostReview(Event_Attendance review)
+    public string PostReview(EventAttendance review)
     {
         if (_context.Events.Count() == 0)
         {
             return "There are no events";
         }
 
-        Event? eve = _context.Events.Where(e => e.Id == review.Event_Id).FirstOrDefault();
+        Event? eve = _context.Events.Where(e => e.Id == review.EventId).FirstOrDefault();
         if (eve == null)
         {
             return "event doesn't exist";
         }
-        if (_context.event_Attendance.Contains(review) ||
-        _context.event_Attendance.FirstOrDefault(r => r.User_Id == review.User_Id) != null)
+        if (_context.EventAttendances.Contains(review) ||
+        _context.EventAttendances.FirstOrDefault(r => r.UserId == review.UserId) != null)
         {
             return "review already exists";
         }
-        _context.event_Attendance.Add(review);
+        _context.EventAttendances.Add(review);
         _context.SaveChanges();
         return "succes";
     }

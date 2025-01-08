@@ -50,20 +50,16 @@ namespace CalendifyApp.Controllers
         {
             // Find the existing attendance record for the user on the specified date
             var existingAttendance = _context.Attendance
-                .FirstOrDefault(a => a.UserId == userId && a.Date == date);
+                .FirstOrDefault(a => a.UserId == userId && DateOnly.FromDateTime(a.Date) == date);
 
             if (existingAttendance != null)
             {
                 _context.Attendance.Remove(existingAttendance); // Remove the record
                 _context.SaveChanges(); // Save changes to the database
-                //return Ok(new { message = "Booking has been cancelled"}); // Return 204 No Content
-                return Ok("Booking has been cancelled"); // Return 204 No Content
-
+                return Ok("Booking has been cancelled"); // Return success message
             }
 
-            //return NotFound(new { message = "Attendance record not found for the given user and date." });
             return NotFound("Attendance record not found for the given user and date.");
-
         }
     }
 }
