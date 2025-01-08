@@ -1,54 +1,54 @@
 using CalendifyApp.Models;
 using CalendifyApp.Utils;
+using System.Linq;
 
-namespace CalendifyApp.Services;
-
-public enum LoginStatus { IncorrectPassword, IncorrectUsername, Success }
-
-public enum ADMIN_SESSION_KEY { adminLoggedIn }
-
-public class LoginService : ILoginService
+namespace CalendifyApp.Services
 {
+    public enum LoginStatus { IncorrectPassword, IncorrectUsername, Success }
 
-    private readonly MyContext _context;
+    public enum ADMIN_SESSION_KEY { adminLoggedIn }
 
-    public LoginService(MyContext context)
+    public class LoginService : ILoginService
     {
-        _context = context;
-    }
+        private readonly MyContext _context;
 
-    public LoginStatus CheckPassword(string username, string inputPassword)
-    {
-        // TODO: Make this method check the password with what is in the database
-        if (_context.Admin.Any(x => x.UserName == username))
+        public LoginService(MyContext context)
         {
-            Admin admin = _context.Admin.Where(x => x.UserName == username).Single();
-            if (admin.Password == EncryptionHelper.EncryptPassword(inputPassword))
-            {
-                return LoginStatus.Success;
-            }
-            return LoginStatus.IncorrectPassword;
-
+            _context = context;
         }
 
-        return LoginStatus.IncorrectUsername;
-    }
-
-    public LoginStatus CheckUserPassword(string username, string inputPassword)
-    {
-
-        if (_context.Users.Any(x => x.First_name == username))
+        public LoginStatus CheckPassword(string username, string inputPassword)
         {
-            User user = _context.Users.Where(x => x.First_name == username).Single();
-            if (user.Password == EncryptionHelper.EncryptPassword(inputPassword))
+            // Check if the admin exists in the database
+            var admin = _context.Admin.SingleOrDefault(x => x.Username == username);
+            if (admin != null)
             {
-                return LoginStatus.Success;
+                // Validate the password
+                if (admin.Password == EncryptionHelper.EncryptPassword(inputPassword))
+                {
+                    return LoginStatus.Success;
+                }
+                return LoginStatus.IncorrectPassword;
             }
-            return LoginStatus.IncorrectPassword;
 
+            return LoginStatus.IncorrectUsername;
         }
 
+        public LoginStatus CheckUserPassword(string username, string inputPassword)
+        {
+            // Check if the user exists in the database
+            var user = _context.Users.SingleOrDefault(x => x.FirstName == username);
+            if (user != null)
+            {
+                // Validate the password
+                if (user.Password == EncryptionHelper.EncryptPassword(inputPassword))
+                {
+                    return LoginStatus.Success;
+                }
+                return LoginStatus.IncorrectPassword;
+            }
 
-        return LoginStatus.IncorrectUsername;
+            return LoginStatus.IncorrectUsername;
+        }
     }
 }
