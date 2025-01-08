@@ -22,7 +22,7 @@ public class EventService : IEventService
             {
                 var eventUserData = new Dictionary<string, object>
                     {
-                        { "reviews", _context.event_Attendance.Where(a => a.Event_Id == eve.Id).ToList() },
+                        { "reviews", _context.EventAttendance.Where(a => a.Event_Id == eve.Id).ToList() },
                         { "attendees", _context.Attendance.Where(a => a.Id == eve.Id).ToList() }
                     };
 
@@ -49,7 +49,7 @@ public class EventService : IEventService
 
             var eventUserData = new Dictionary<string, object>
                     {
-                        { "reviews", _context.event_Attendance.Where(a => a.Event_Id == eve.Id).ToList() },
+                        { "reviews", _context.EventAttendance.Where(a => a.Event_Id == eve.Id).ToList() },
                         { "attendees", _context.Attendance.Where(a => a.Id == eve.Id).ToList() }
                     };
 
@@ -115,12 +115,12 @@ public class EventService : IEventService
         return null;
 
     }
-    public List<Event_Attendance>? allReviews()
+    public List<EventAttendance>? allReviews()
     {
-        if (_context.event_Attendance.Count() == 0) return null;
-        return _context.event_Attendance.ToList();
+        if (_context.EventAttendance.Count() == 0) return null;
+        return _context.EventAttendance.ToList();
     }
-    public string PostReview(Event_Attendance review)
+    public string PostReview(EventAttendance review)
     {
         if (_context.Events.Count() == 0)
         {
@@ -132,12 +132,12 @@ public class EventService : IEventService
         {
             return "event doesn't exist";
         }
-        if (_context.event_Attendance.Contains(review) ||
-        _context.event_Attendance.FirstOrDefault(r => r.User_Id == review.User_Id) != null)
+        if (_context.EventAttendance.Contains(review) ||
+        _context.EventAttendance.FirstOrDefault(r => r.User_Id == review.User_Id) != null)
         {
             return "review already exists";
         }
-        _context.event_Attendance.Add(review);
+        _context.EventAttendance.Add(review);
         _context.SaveChanges();
         return "succes";
     }

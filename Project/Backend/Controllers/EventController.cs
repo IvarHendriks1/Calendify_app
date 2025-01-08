@@ -88,7 +88,7 @@ namespace CalendifyApp.Controllers
         [HttpGet("review")]
         public IActionResult watchReviews()
         {
-            List<Event_Attendance>? reviews = _eventService.allReviews();
+            List<EventAttendance>? reviews = _eventService.allReviews();
             if (reviews != null) return Ok(reviews.ToString());
             return BadRequest($"There are no reviews");
         }
@@ -96,7 +96,7 @@ namespace CalendifyApp.Controllers
 
         [AuthorizationFilter]
         [HttpPost("review")]
-        public IActionResult addReview([FromBody] Event_Attendance review)
+        public IActionResult addReview([FromBody] EventAttendance review)
         {
             string result = _eventService.PostReview(review);
             if (result == "succes") return Ok(new { message = "review added succesfully", added_review = review });

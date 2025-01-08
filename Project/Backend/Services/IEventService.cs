@@ -8,6 +8,6 @@ public interface IEventService
     public string postEvent(Event eventToAdd);
     public Event? putEvent(Event eve);
     public Event? deleteEvent(int id);
-    public List<Event_Attendance>? allReviews();
-    public string PostReview(Event_Attendance review);
+    public List<EventAttendance>? allReviews();
+    public string PostReview(EventAttendance review);
 }
