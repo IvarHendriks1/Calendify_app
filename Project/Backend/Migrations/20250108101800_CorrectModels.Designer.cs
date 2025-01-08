@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Project.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20250108100419_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250108101800_CorrectModels")]
+    partial class CorrectModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -147,9 +147,8 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("RecurringDays")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("RecurringDays")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

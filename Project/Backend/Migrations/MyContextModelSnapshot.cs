@@ -144,9 +144,8 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("RecurringDays")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("RecurringDays")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
