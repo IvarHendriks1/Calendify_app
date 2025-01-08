@@ -78,7 +78,7 @@ namespace CalendifyApp.Controllers
                     (attendance, user) => new
                     {
                         attendance.UserId,
-                        UserName = user.First_name + " " + user.Last_name
+                        UserName = user.FirstName + " " + user.LastName
                     }
                 )
                 .ToList();
