@@ -31,7 +31,7 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -46,7 +46,7 @@ namespace Project.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateOnly>("Date")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
@@ -65,24 +65,24 @@ namespace Project.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("Admin_approval")
+                    b.Property<bool>("AdminApproval")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateOnly>("Date")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeOnly>("EndTime")
+                    b.Property<TimeSpan>("EndTime")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeOnly>("StartTime")
+                    b.Property<TimeSpan>("StartTime")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
@@ -94,29 +94,23 @@ namespace Project.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("CalendifyApp.Models.Event_Attendance", b =>
+            modelBuilder.Entity("CalendifyApp.Models.EventAttendance", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("EventId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Event_Id")
+                    b.Property<int>("EventId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Feedback")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Rating")
+                    b.Property<int?>("Rating")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("User_Id")
+                    b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -125,7 +119,7 @@ namespace Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("event_Attendance");
+                    b.ToTable("EventAttendances");
                 });
 
             modelBuilder.Entity("CalendifyApp.Models.User", b =>
@@ -138,11 +132,11 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("First_name")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Last_name")
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -150,9 +144,8 @@ namespace Project.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Recurring_days")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("RecurringDays")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -161,34 +154,44 @@ namespace Project.Migrations
 
             modelBuilder.Entity("CalendifyApp.Models.Attendance", b =>
                 {
-                    b.HasOne("CalendifyApp.Models.User", null)
+                    b.HasOne("CalendifyApp.Models.User", "User")
                         .WithMany("Attendances")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CalendifyApp.Models.Event_Attendance", b =>
+            modelBuilder.Entity("CalendifyApp.Models.EventAttendance", b =>
                 {
-                    b.HasOne("CalendifyApp.Models.Event", null)
-                        .WithMany("Event_Attendances")
-                        .HasForeignKey("EventId");
+                    b.HasOne("CalendifyApp.Models.Event", "Event")
+                        .WithMany("EventAttendances")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("CalendifyApp.Models.User", null)
-                        .WithMany("Event_Attendances")
-                        .HasForeignKey("UserId");
+                    b.HasOne("CalendifyApp.Models.User", "User")
+                        .WithMany("EventAttendances")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CalendifyApp.Models.Event", b =>
                 {
-                    b.Navigation("Event_Attendances");
+                    b.Navigation("EventAttendances");
                 });
 
             modelBuilder.Entity("CalendifyApp.Models.User", b =>
                 {
                     b.Navigation("Attendances");
 
-                    b.Navigation("Event_Attendances");
+                    b.Navigation("EventAttendances");
                 });
 #pragma warning restore 612, 618
         }

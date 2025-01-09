@@ -33,7 +33,7 @@ namespace CalendifyApp.Controllers
                 return NotFound("User or event not found.");
             }
 
-            if (eventEntity.Date.ToDateTime(eventEntity.StartTime) < DateTime.Now)
+            if (eventEntity.Date.Add(eventEntity.StartTime) < DateTime.Now)
             {
                 return BadRequest("The event has already started or ended.");
             }
@@ -60,7 +60,6 @@ namespace CalendifyApp.Controllers
 
         // GET: Retrieve list of attendees for an event
         [HttpGet("attendees/{eventId}")]
-        [AdminFilter] // Apply filter so only admins can access this endpoint
         public IActionResult GetEventAttendees(int eventId)
         {
             var eventDate = _context.Events.FirstOrDefault(e => e.Id == eventId)?.Date;
@@ -79,7 +78,7 @@ namespace CalendifyApp.Controllers
                     (attendance, user) => new
                     {
                         attendance.UserId,
-                        UserName = user.First_name + " " + user.Last_name
+                        UserName = user.FirstName + " " + user.LastName
                     }
                 )
                 .ToList();
@@ -90,6 +89,59 @@ namespace CalendifyApp.Controllers
             }
 
             return Ok(eventAttendees);
+        }
+
+        // GET: Retrieve list of events a user has attended
+        [HttpGet("user/{userId}/attended-events")]
+        public IActionResult GetEventsByUser(int userId)
+        {
+            // Check if the userId is valid (positive integer)
+            if (userId <= 0)
+            {
+                return BadRequest("Invalid user ID. Please provide a positive integer value.");
+            }
+
+            try
+            {
+                // Check if the user exists
+                var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+                if (user == null)
+                {
+                    return NotFound("User not found.");
+                }
+
+                // Get all events attended by the user
+                var attendedEvents = _context.Attendance
+                    .Where(a => a.UserId == userId)
+                    .Join(
+                        _context.Events,
+                        attendance => attendance.Date,
+                        eventEntity => eventEntity.Date,
+                        (attendance, eventEntity) => new
+                        {
+                            eventEntity.Id,
+                            eventEntity.Title,
+                            eventEntity.Date,
+                            eventEntity.StartTime,
+                            eventEntity.EndTime
+                        }
+                    )
+                    .ToList();
+
+                if (!attendedEvents.Any())
+                {
+                    return NotFound("No attended events found for this user.");
+                }
+
+                return Ok(attendedEvents);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                // _logger.LogError(ex, "An error occurred while retrieving attended events.");
+
+                return StatusCode(500, "An unexpected error occurred. Please try again later.");
+            }
         }
 
 

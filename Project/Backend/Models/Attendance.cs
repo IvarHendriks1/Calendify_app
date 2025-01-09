@@ -4,13 +4,8 @@ namespace CalendifyApp.Models
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public DateOnly Date {get; set; }
-        public Attendance() { }
-        public Attendance(int id, int userId, DateOnly date)
-        {
-            Id = id;
-            UserId = userId;
-            Date = date;
-        }
+        public DateTime Date { get; set; }
+
+        public User User { get; set; }
     }
 }
