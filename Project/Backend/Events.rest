@@ -2,11 +2,13 @@
 GET http://localhost:5001/api/SimulateAdminLogin
 Cookie: AdminLoggedIn=admin1
 
+
 ################
 
 # User Login
 POST http://localhost:5001/api/SimulateUserLogin
 Content-Type: application/json
+
 
 ################
 
@@ -23,13 +25,7 @@ POST http://localhost:5001/api/Events
 Content-Type: application/json
 
 {
-  "title": "Annual Conference",
-  "description": "A conference for industry professionals.",
-  "date": "2024-11-15",
-  "startTime": "09:00:00",
-  "endTime": "17:00:00",
-  "location": "Convention Center, Hall A",
-  "adminApproval": true
+
 }
 
 ####
