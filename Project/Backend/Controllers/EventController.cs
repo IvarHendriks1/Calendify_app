@@ -1,106 +1,102 @@
 using Microsoft.AspNetCore.Mvc;
 using CalendifyApp.Models;
 using CalendifyApp.Services;
-using System.Linq;
 using CalendifyApp.Filters;
-using System.Data.Entity.Core.Objects;
-
-
 
 namespace CalendifyApp.Controllers
 {
     [ApiController]
     [Route("api/Events")]
-    //[controller]
     public class EventController : Controller
     {
+        private readonly IEventService _eventService;
 
-        private readonly EventService _eventService;
-
-        public EventController(EventService eventService)
+        public EventController(IEventService eventService)
         {
             _eventService = eventService;
         }
 
-        [AuthorizationFilter]
         [HttpGet]
-        public IActionResult getEvents()
+        public IActionResult GetAllEvents()
         {
-            return Ok("got here");
-            Dictionary<string, object>? events = _eventService.allEvents();
-            if (events == null) return BadRequest("there are no events");
-            return Ok("events");
+            var events = _eventService.GetAllEvents();
+            if (events == null || !events.Any())
+                return NotFound("No events available.");
+            
+            return Ok(events);
         }
 
-        [AuthorizationFilter]
         [HttpGet("{id}")]
-        public IActionResult getEvent(int id)
+        public IActionResult GetEventById(int id)
         {
-            object? eve = _eventService.GetOneEvent(id);
-            if (eve == null) return BadRequest($"no event with id {id}");
-            return Ok(eve);
+            var eventDetails = _eventService.GetEventById(id);
+            if (eventDetails == null)
+                return NotFound($"No event found with ID {id}.");
+            
+            return Ok(eventDetails);
         }
-
 
         [AdminFilter]
         [HttpPost]
         public IActionResult AddEvent([FromBody] Event eventToAdd)
-
         {
-            string result = _eventService.postEvent(eventToAdd);
-            if (result == "Event has been added succesfully") return Ok($"Event has been added succesfully\n{eventToAdd}");
-            return BadRequest(result);
+            var result = _eventService.AddEvent(eventToAdd);
+            if (result)
+                return Ok("Event added successfully.");
+            
+            return BadRequest("Failed to add the event.");
+        }
+
+        [AdminFilter]
+        [HttpPut("{id}")]
+        public IActionResult UpdateEvent(int id, [FromBody] Event updatedEvent)
+        {
+            var result = _eventService.UpdateEvent(id, updatedEvent);
+            if (result)
+                return Ok($"Event with ID {id} updated successfully.");
+            
+            return NotFound($"Event with ID {id} not found.");
         }
 
         [AdminFilter]
         [HttpDelete("{id}")]
         public IActionResult DeleteEvent(int id)
         {
-            Event? deletedEvent = _eventService.deleteEvent(id);
-            if (deletedEvent != null)
-                return Ok(new
-                {
-                    message = $"Event with id {id} has been deleted successfully",
-                    deleted_event = deletedEvent
-                });
-            return BadRequest($"event {id} doesn't exists");
+            var result = _eventService.DeleteEvent(id);
+            if (result)
+                return Ok($"Event with ID {id} deleted successfully.");
+            
+            return NotFound($"Event with ID {id} not found.");
         }
 
-
-        [AdminFilter]
-        [HttpPut]
-        public IActionResult updateEvent([FromBody] Event updatedEvent)
+        [HttpGet("reviews")]
+        public IActionResult GetAllReviews()
         {
-            Event? eventToUpdate = _eventService.putEvent(updatedEvent);
-            if (eventToUpdate != null)
-            {
-                return Ok(new
-                {
-                    message = $"Event with id {updatedEvent.Id} has been updated successfully",
-                    updatedVersion = updatedEvent,
-                    olderVersion = eventToUpdate
-                });
-            }
-            return BadRequest($"event {updatedEvent.Id} doesn't exists");
+            var reviews = _eventService.GetAllReviews();
+            if (reviews == null || !reviews.Any())
+                return NotFound("No reviews found.");
+            
+            return Ok(reviews);
         }
 
-        [AuthorizationFilter]
-        [HttpGet("review")]
-        public IActionResult watchReviews()
-        {
-            List<EventAttendance>? reviews = _eventService.allReviews();
-            if (reviews != null) return Ok(reviews.ToString());
-            return BadRequest($"There are no reviews");
-        }
-
-
-        [AuthorizationFilter]
         [HttpPost("review")]
-        public IActionResult addReview([FromBody] EventAttendance review)
+        public IActionResult AddReview([FromBody] EventAttendance review)
         {
-            string result = _eventService.PostReview(review);
-            if (result == "succes") return Ok(new { message = "review added succesfully", added_review = review });
-            return BadRequest(result);
+            var result = _eventService.AddReview(review);
+            if (result)
+                return Ok("Review added successfully.");
+            
+            return BadRequest("Failed to add the review.");
+        }
+
+        [HttpGet("search")]
+        public IActionResult SearchEvents(string? title = null, string? location = null, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var events = _eventService.SearchEvents(title, location, startDate, endDate);
+            if (events == null || !events.Any())
+                return NotFound("No matching events found.");
+            
+            return Ok(events);
         }
     }
 }

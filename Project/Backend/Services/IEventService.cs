@@ -1,13 +1,18 @@
 using CalendifyApp.Models;
+using System;
+using System.Collections.Generic;
 
-namespace CalendifyApp.Services;
-public interface IEventService
+namespace CalendifyApp.Services
 {
-    public Dictionary<string, object>? allEvents();
-    public object? GetOneEvent(int id);
-    public string postEvent(Event eventToAdd);
-    public Event? putEvent(Event eve);
-    public Event? deleteEvent(int id);
-    public List<EventAttendance>? allReviews();
-    public string PostReview(EventAttendance review);
+    public interface IEventService
+    {
+        List<Event> GetAllEvents();
+        Event? GetEventById(int id);
+        bool AddEvent(Event eventToAdd);
+        bool UpdateEvent(int id, Event updatedEvent);
+        bool DeleteEvent(int id);
+        List<EventAttendance> GetAllReviews();
+        bool AddReview(EventAttendance review);
+        List<Event> SearchEvents(string? title, string? location, DateTime? startDate, DateTime? endDate);
+    }
 }

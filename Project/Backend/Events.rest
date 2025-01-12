@@ -1,80 +1,85 @@
-#Admin Login
-POST http://localhost:5001/api/Login
-Content-Type: application/json
+# Admin Login
+GET http://localhost:5001/api/SimulateAdminLogin
+Cookie: AdminLoggedIn=admin1
 
-{
-  "username": "admin",
-  "password": "password123"
-}
 ################
 
-#User login
-POST http://localhost:5001/api/Login
+# User Login
+POST http://localhost:5001/api/SimulateUserLogin
 Content-Type: application/json
 
-{
-  "username": "John",
-  "password": "password"
-}
 ################
 
+# Get All Events
 GET http://localhost:5001/api/Events
 #####
 
-GET http://localhost:5001/api/Events/2
+# Get Event By ID
+GET http://localhost:5001/api/Events/1
 #####
 
-
+# Add New Event (Admin Only)
 POST http://localhost:5001/api/Events
 Content-Type: application/json
 
 {
-  "Id":3,
-  "Title": "Annual Conference",
-  "Description": "A conference for industry professionals.",
-  "EventDate": "2024-11-15",
-  "StartTime": "09:00:00",
-  "EndTime": "17:00:00",
-  "Location": "Convention Center, Hall A",
-  "AdminApproval": false
+  "title": "Annual Conference",
+  "description": "A conference for industry professionals.",
+  "date": "2024-11-15",
+  "startTime": "09:00:00",
+  "endTime": "17:00:00",
+  "location": "Convention Center, Hall A",
+  "adminApproval": true
 }
 
 ####
 
-DELETE http://localhost:5001/api/Events/3
-####
-
-
-PUT http://localhost:5001/api/Events
-Content-Type: application/json 
+# Update Existing Event (Admin Only)
+PUT http://localhost:5001/api/Events/1
+Content-Type: application/json
 
 {
-  "Id":3,
-  "Title": "changed",
-  "Description": "this has been changed",
-  "EventDate": "2024-11-15",
-  "StartTime": "09:00:00",
-  "EndTime": "18:00:00",
-  "Location": "Convention Center, Hall B",
-  "AdminApproval": false
+  "title": "Updated Annual Conference",
+  "description": "An updated description for the conference.",
+  "date": "2024-11-15",
+  "startTime": "10:00:00",
+  "endTime": "18:00:00",
+  "location": "Convention Center, Hall B",
+  "adminApproval": true
 }
 
 ####
 
-GET http://localhost:5001/api/Events/review
-
-
+# Delete Event (Admin Only)
+DELETE http://localhost:5001/api/Events/1
 ####
 
+# Get All Reviews
+GET http://localhost:5001/api/Events/reviews
+####
+
+# Add Review
 POST http://localhost:5001/api/Events/review
 Content-Type: application/json
 
 {
-  "Id": 5,
-  "User_Id": 3,
-  "Event_Id":1,
-  "Rating": 37,
-  "Feedback": "good event really"
+  "userId": 3,
+  "eventId": 1,
+  "rating": 5,
+  "feedback": "Great event! Learned a lot."
 }
 
-#####
+####
+
+# Search Events by Title
+GET http://localhost:5001/api/Events/search?title=Annual
+####
+
+# Search Events by Location
+GET http://localhost:5001/api/Events/search?location=Convention
+####
+
+# Search Events by Date Range
+GET http://localhost:5001/api/Events/search?startDate=2024-11-10&endDate=2024-11-20
+####
+
