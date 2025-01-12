@@ -25,18 +25,22 @@ namespace CalendifyApp.Services
                 .FirstOrDefault(e => e.Id == id);
         }
 
-        public bool AddEvent(Event eventToAdd)
+        public async Task<Event> AddEvent(Event NewEvent)
         {
-            try
+            Event eventt = new Event
             {
-                _context.Events.Add(eventToAdd);
-                _context.SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            Title = NewEvent.Title,
+            Description = NewEvent.Description,
+            Date = NewEvent.Date,
+            StartTime = NewEvent.StartTime,
+            EndTime = NewEvent.EndTime,
+            Location = NewEvent.Location,
+            AdminApproval = NewEvent.AdminApproval
+            };
+
+            _context.Events.Add(eventt);
+            await _context.SaveChangesAsync();
+            return eventt;
         }
 
         public bool UpdateEvent(int id, Event updatedEvent)
