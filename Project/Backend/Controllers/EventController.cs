@@ -33,9 +33,10 @@ namespace CalendifyApp.Controllers
             var eventDetails = _eventService.GetEventById(id);
             if (eventDetails == null)
                 return NotFound($"No event found with ID {id}.");
-            
+
             return Ok(eventDetails);
         }
+
 
 
         [HttpPost]

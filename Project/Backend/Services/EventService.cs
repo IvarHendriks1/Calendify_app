@@ -12,18 +12,51 @@ namespace CalendifyApp.Services
             _context = context;
         }
 
-        public List<Event> GetAllEvents()
-        {
-            return _context.Events.Include(e => e.EventAttendances).ToList();
-        }
-
-        public Event? GetEventById(int id)
+        public List<DetailedEventDTO> GetAllEvents()
         {
             return _context.Events
-                .Include(e => e.EventAttendances)
-                .ThenInclude(ea => ea.User)
-                .FirstOrDefault(e => e.Id == id);
+                .Include(e => e.EventAttendances) // Include for potential counts, even if null
+                .Select(e => new DetailedEventDTO
+                {
+                    Title = e.Title,
+                    Description = e.Description,
+                    Date = e.Date,
+                    StartTime = e.StartTime,
+                    EndTime = e.EndTime,
+                    Location = e.Location,
+                    AdminApproval = e.AdminApproval
+                })
+                .ToList();
         }
+
+
+        public DetailedEventDTO? GetEventById(int id)
+        {
+            var eventEntity = _context.Events
+                .Include(e => e.EventAttendances)
+                .FirstOrDefault(e => e.Id == id);
+
+            if (eventEntity == null) 
+            {
+                Console.WriteLine($"No event found with ID: {id}");
+                return null;
+            }
+
+            Console.WriteLine($"Event found: {eventEntity.Title}");
+            return new DetailedEventDTO
+            {
+                Title = eventEntity.Title,
+                Description = eventEntity.Description,
+                Date = eventEntity.Date,
+                StartTime = eventEntity.StartTime,
+                EndTime = eventEntity.EndTime,
+                Location = eventEntity.Location,
+                AdminApproval = eventEntity.AdminApproval
+            };
+        }
+
+
+
 
         public async Task<Event> AddEvent(DTOEvent newEvent)
         {

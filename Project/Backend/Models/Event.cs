@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CalendifyApp.Models
 {
@@ -13,6 +13,7 @@ namespace CalendifyApp.Models
         public string Location { get; set; }
         public bool AdminApproval { get; set; }
 
+        [JsonIgnore] // Prevent cyclic reference
         public ICollection<EventAttendance> EventAttendances { get; set; }
     }
 }
