@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserInput } from './LoginPage';
-//import { EventCreator } from './EvenCreator';
+import { EventCreator } from './EvenCreator';
 import { GreetingPage } from './CalenderPage';
-//<Route path="/event" element={<EventCreator />} />
+import SearchPage from './SearchPage';
 
 const App: React.FC = () => {
   return (
@@ -12,6 +12,8 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<UserInput />} />
         <Route path="/greeting" element={<GreetingPage />} />
+        <Route path="/event" element={<EventCreator />} />
+        <Route path="/search" element={<SearchPage />} />
       </Routes>
     </Router>
   );
