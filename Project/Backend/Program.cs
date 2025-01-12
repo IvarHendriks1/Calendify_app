@@ -16,9 +16,20 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Register the MyContext DbContext with a SQLite connection string
 builder.Services.AddDbContext<MyContext>(options =>
-    options.UseSqlite("Data Source=calendify.db")); // Using SQLite database
+    options.UseSqlite("Data Source=calendify.db"));
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
+});
 
 var app = builder.Build();
 
@@ -29,6 +40,8 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated(); // Ensure the database is created
     DatabaseSeeder.Seed(context);    // Call the seeder to populate the database
 }
+
+app.UseCors(); 
 
 app.UseSession();
 
