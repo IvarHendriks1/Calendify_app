@@ -37,15 +37,17 @@ namespace CalendifyApp.Controllers
             return Ok(eventDetails);
         }
 
-        [AdminFilter]
+
         [HttpPost]
-        public async Task<IActionResult> AddEvent([FromBody] Event eventToAdd)
+        public async Task<IActionResult> AddEvent([FromBody] CreateEventDto eventDto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            Event createdevent = await _eventService.AddEvent(eventToAdd);
-            return CreatedAtAction(nameof(GetEventById), new {id = createdevent.Id }, createdevent);
+            // Call the AddEvent method from the service
+            var createdEvent = await _eventService.AddEvent(eventDto);
+
+            return CreatedAtAction(nameof(GetEventById), new { id = createdEvent.Id }, createdEvent);
         }
 
         [AdminFilter]

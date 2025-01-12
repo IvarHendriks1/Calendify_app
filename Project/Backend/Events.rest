@@ -24,9 +24,17 @@ GET http://localhost:5001/api/Events/1
 POST http://localhost:5001/api/Events
 Content-Type: application/json
 
-{
 
+  {
+  "Title": "Updated Annual Conference",
+  "Description": "An updated description for the conference.",
+  "Date": "2024-11-15",
+  "StartTime": "10:00:00",
+  "EndTime": "18:00:00",
+  "Location": "Convention Center, Hall B",
+  "AdminApproval": true
 }
+
 
 ####
 

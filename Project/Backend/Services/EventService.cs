@@ -25,22 +25,25 @@ namespace CalendifyApp.Services
                 .FirstOrDefault(e => e.Id == id);
         }
 
-        public async Task<Event> AddEvent(Event NewEvent)
+        public async Task<Event> AddEvent(CreateEventDto newEvent)
         {
-            Event eventt = new Event
+            // Map the DTO to the Event entity
+            var eventToAdd = new Event
             {
-            Title = NewEvent.Title,
-            Description = NewEvent.Description,
-            Date = NewEvent.Date,
-            StartTime = NewEvent.StartTime,
-            EndTime = NewEvent.EndTime,
-            Location = NewEvent.Location,
-            AdminApproval = NewEvent.AdminApproval
+                Title = newEvent.Title,
+                Description = newEvent.Description,
+                Date = newEvent.Date,
+                StartTime = newEvent.StartTime,
+                EndTime = newEvent.EndTime,
+                Location = newEvent.Location,
+                AdminApproval = newEvent.AdminApproval
             };
 
-            _context.Events.Add(eventt);
+            // Add event to the database
+            _context.Events.Add(eventToAdd);
             await _context.SaveChangesAsync();
-            return eventt;
+
+            return eventToAdd; // Return the saved event
         }
 
         public bool UpdateEvent(int id, Event updatedEvent)
