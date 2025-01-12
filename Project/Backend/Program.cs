@@ -30,9 +30,9 @@ using (var scope = app.Services.CreateScope())
     DatabaseSeeder.Seed(context);    // Call the seeder to populate the database
 }
 
-app.MapControllers();
-
 app.UseSession();
+
+app.MapControllers();
 
 app.Urls.Add("http://localhost:5001");
 

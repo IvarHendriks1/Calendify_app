@@ -1,22 +1,12 @@
 # Admin Login
-POST http://localhost:5001/api/Login
-Content-Type: application/json
-
-{
-  "username": "admin1",
-  "password": "adminpass1"
-}
+GET http://localhost:5001/api/SimulateAdminLogin
+Cookie: AdminLoggedIn=admin1
 
 ################
 
 # User Login
-POST http://localhost:5001/api/Login
+POST http://localhost:5001/api/SimulateUserLogin
 Content-Type: application/json
-
-{
-  "username": "John",
-  "password": "password1"
-}
 
 ################
 
