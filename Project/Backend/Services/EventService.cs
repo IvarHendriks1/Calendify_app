@@ -1,144 +1,107 @@
 using CalendifyApp.Models;
-using CalendifyApp.Utils;
-using CalendifyApp.Controllers;
+using Microsoft.EntityFrameworkCore;
 
-namespace CalendifyApp.Services;
-
-public class EventService : IEventService
+namespace CalendifyApp.Services
 {
-    private readonly MyContext _context;
-
-    public EventService(MyContext context)
+    public class EventService : IEventService
     {
-        _context = context;
-    }
+        private readonly MyContext _context;
 
-    public Dictionary<string, object>? allEvents()
-    {
-        if (_context.Events.Count() != 0)
+        public EventService(MyContext context)
         {
-            Dictionary<string, object> eventData = new() { };
-            foreach (Event eve in _context.Events)
+            _context = context;
+        }
+
+        public List<Event> GetAllEvents()
+        {
+            return _context.Events.Include(e => e.EventAttendances).ToList();
+        }
+
+        public Event? GetEventById(int id)
+        {
+            return _context.Events
+                .Include(e => e.EventAttendances)
+                .ThenInclude(ea => ea.User)
+                .FirstOrDefault(e => e.Id == id);
+        }
+
+        public bool AddEvent(Event eventToAdd)
+        {
+            try
             {
-                var eventUserData = new Dictionary<string, object>
-                    {
-                        { "reviews", _context.EventAttendances.Where(a => a.EventId == eve.Id).ToList() },
-                        { "attendees", _context.Attendance.Where(a => a.Id == eve.Id).ToList() }
-                    };
-
-                var eventDetails = new Dictionary<string, object>
-                    {
-                        { "event", eve },
-                        { "event data", eventUserData }
-                    };
-                eventData.Add($"event {eve.Id}", eventDetails);
+                _context.Events.Add(eventToAdd);
+                _context.SaveChanges();
+                return true;
             }
-            return eventData;
-        }
-        return null;
-    }
-    public object? GetOneEvent(int id)
-    {
-        if (_context.Events.Count() != 0)
-        {
-            Event? eve = _context.Events.Where(e => e.Id == id).FirstOrDefault();
-            if (eve == null)
+            catch
             {
-                return null;
+                return false;
             }
-
-            var eventUserData = new Dictionary<string, object>
-                    {
-                        { "reviews", _context.EventAttendances.Where(a => a.EventId == eve.Id).ToList() },
-                        { "attendees", _context.Attendance.Where(a => a.Id == eve.Id).ToList() }
-                    };
-
-            // Create the event details dictionary
-            var eventDetails = new Dictionary<string, object>
-                    {
-                        { "event", eve },
-                        { "event data", eventUserData }
-                    };
-            Dictionary<string, object> eventData = new() { { $"event {eve.Id}", eventDetails } };
-            return eventData;
-        }
-        return null;
-    }
-    public string postEvent(Event eventToAdd)
-    {
-        if (eventToAdd is not Event)
-        {
-            return "given event could not be added";
         }
 
-        Event? eventExists = _context.Events.FirstOrDefault(e => e.Id == eventToAdd.Id);
-        if (eventExists is null)
+        public bool UpdateEvent(int id, Event updatedEvent)
         {
-            _context.Events.Add(eventToAdd);
-            if (_context.SaveChanges() == 1) return "Event has been added succesfully";
-        }
-        else if (eventExists is not null)
-        {
-            return "event already exists";
-        }
-        return "given event could not be added";
-    }
+            var existingEvent = _context.Events.FirstOrDefault(e => e.Id == id);
+            if (existingEvent == null) return false;
 
-    public Event? putEvent(Event eve)
-    {
-        Event? eventToUpdate = _context.Events.FirstOrDefault(e => e.Id == eve.Id);
-        if (eventToUpdate is not null)
-        {
-            eventToUpdate.Title = eve.Title;
-            eventToUpdate.Description = eve.Description;
-            eventToUpdate.Date = eve.Date;
-            eventToUpdate.StartTime = eve.StartTime;
-            eventToUpdate.EndTime = eve.EndTime;
-            eventToUpdate.Location = eve.Location;
-            //eventToUpdate.Admin_approval = eve.Admin_approval;
+            existingEvent.Title = updatedEvent.Title;
+            existingEvent.Description = updatedEvent.Description;
+            existingEvent.Date = updatedEvent.Date;
+            existingEvent.StartTime = updatedEvent.StartTime;
+            existingEvent.EndTime = updatedEvent.EndTime;
+            existingEvent.Location = updatedEvent.Location;
+            existingEvent.AdminApproval = updatedEvent.AdminApproval;
 
             _context.SaveChanges();
-            return eventToUpdate;
+            return true;
         }
-        return null;
-    }
 
-    public Event? deleteEvent(int id)
-    {
-        var eventToDelete = _context.Events.FirstOrDefault(e => e.Id == id);
-        if (eventToDelete is not null)
+        public bool DeleteEvent(int id)
         {
+            var eventToDelete = _context.Events.FirstOrDefault(e => e.Id == id);
+            if (eventToDelete == null) return false;
+
             _context.Events.Remove(eventToDelete);
             _context.SaveChanges();
-            return eventToDelete;
-        }
-        return null;
-
-    }
-    public List<EventAttendance>? allReviews()
-    {
-        if (_context.EventAttendances.Count() == 0) return null;
-        return _context.EventAttendances.ToList();
-    }
-    public string PostReview(EventAttendance review)
-    {
-        if (_context.Events.Count() == 0)
-        {
-            return "There are no events";
+            return true;
         }
 
-        Event? eve = _context.Events.Where(e => e.Id == review.EventId).FirstOrDefault();
-        if (eve == null)
+        public List<EventAttendance> GetAllReviews()
         {
-            return "event doesn't exist";
+            return _context.EventAttendances.Include(ea => ea.User).ToList();
         }
-        if (_context.EventAttendances.Contains(review) ||
-        _context.EventAttendances.FirstOrDefault(r => r.UserId == review.UserId) != null)
+
+        public bool AddReview(EventAttendance review)
         {
-            return "review already exists";
+            try
+            {
+                _context.EventAttendances.Add(review);
+                _context.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
-        _context.EventAttendances.Add(review);
-        _context.SaveChanges();
-        return "succes";
+
+        public List<Event> SearchEvents(string? title, string? location, DateTime? startDate, DateTime? endDate)
+        {
+            var query = _context.Events.AsQueryable();
+
+            if (!string.IsNullOrEmpty(title))
+                query = query.Where(e => e.Title.Contains(title));
+
+            if (!string.IsNullOrEmpty(location))
+                query = query.Where(e => e.Location.Contains(location));
+
+            if (startDate.HasValue)
+                query = query.Where(e => e.Date >= startDate.Value);
+
+            if (endDate.HasValue)
+                query = query.Where(e => e.Date <= endDate.Value);
+
+            return query.Include(e => e.EventAttendances).ToList();
+        }
     }
 }

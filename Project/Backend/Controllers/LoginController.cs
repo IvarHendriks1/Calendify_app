@@ -17,6 +17,21 @@ public class LoginController : Controller
         _loginService = loginService;
     }
 
+    [HttpGet("SimulateAdminLogin")]
+    public IActionResult SimulateAdminLogin()
+    {
+        HttpContext.Session.SetString("AdminLoggedIn", "admin1");
+        return Ok("Simulated admin login successful.");
+    }
+
+    [HttpGet("SimulateUserLogin")]
+    public IActionResult SimulateUserLogin()
+    {
+        HttpContext.Session.SetString("UserLoggedIn", "John");
+        return Ok("Simulated user login successful.");
+    }
+
+
     [HttpPost("Login")]
     public IActionResult Login([FromBody] LoginBody loginBody)
     {
