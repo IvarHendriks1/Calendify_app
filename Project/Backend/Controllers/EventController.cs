@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using CalendifyApp.Models;
 using CalendifyApp.Services;
 using CalendifyApp.Filters;
+using System.Collections.Generic;
 
 namespace CalendifyApp.Controllers
 {
@@ -32,19 +33,22 @@ namespace CalendifyApp.Controllers
             var eventDetails = _eventService.GetEventById(id);
             if (eventDetails == null)
                 return NotFound($"No event found with ID {id}.");
-            
+
             return Ok(eventDetails);
         }
 
-        [AdminFilter]
+
+
         [HttpPost]
-        public IActionResult AddEvent([FromBody] Event eventToAdd)
+        public async Task<IActionResult> AddEvent([FromBody] DTOEvent eventDto)
         {
-            var result = _eventService.AddEvent(eventToAdd);
-            if (result)
-                return Ok("Event added successfully.");
-            
-            return BadRequest("Failed to add the event.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Call the AddEvent method from the service
+            var createdEvent = await _eventService.AddEvent(eventDto);
+
+            return CreatedAtAction(nameof(GetEventById), new { id = createdEvent.Id }, createdEvent);
         }
 
         [AdminFilter]

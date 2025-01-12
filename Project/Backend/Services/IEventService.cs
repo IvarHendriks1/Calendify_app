@@ -6,9 +6,9 @@ namespace CalendifyApp.Services
 {
     public interface IEventService
     {
-        List<Event> GetAllEvents();
-        Event? GetEventById(int id);
-        bool AddEvent(Event eventToAdd);
+        List<DetailedEventDTO> GetAllEvents(); // Return DTOEvent instead of Event
+        DetailedEventDTO? GetEventById(int id); // Return DTOEvent instead of Event
+        Task<Event> AddEvent(DTOEvent newEvent);
         bool UpdateEvent(int id, Event updatedEvent);
         bool DeleteEvent(int id);
         List<EventAttendance> GetAllReviews();
@@ -16,3 +16,4 @@ namespace CalendifyApp.Services
         List<Event> SearchEvents(string? title, string? location, DateTime? startDate, DateTime? endDate);
     }
 }
+ 

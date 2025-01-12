@@ -12,31 +12,71 @@ namespace CalendifyApp.Services
             _context = context;
         }
 
-        public List<Event> GetAllEvents()
-        {
-            return _context.Events.Include(e => e.EventAttendances).ToList();
-        }
-
-        public Event? GetEventById(int id)
+        public List<DetailedEventDTO> GetAllEvents()
         {
             return _context.Events
-                .Include(e => e.EventAttendances)
-                .ThenInclude(ea => ea.User)
-                .FirstOrDefault(e => e.Id == id);
+                .Include(e => e.EventAttendances) // Include for potential counts, even if null
+                .Select(e => new DetailedEventDTO
+                {
+                    Title = e.Title,
+                    Description = e.Description,
+                    Date = e.Date,
+                    StartTime = e.StartTime,
+                    EndTime = e.EndTime,
+                    Location = e.Location,
+                    AdminApproval = e.AdminApproval
+                })
+                .ToList();
         }
 
-        public bool AddEvent(Event eventToAdd)
+
+        public DetailedEventDTO? GetEventById(int id)
         {
-            try
+            var eventEntity = _context.Events
+                .Include(e => e.EventAttendances)
+                .FirstOrDefault(e => e.Id == id);
+
+            if (eventEntity == null) 
             {
-                _context.Events.Add(eventToAdd);
-                _context.SaveChanges();
-                return true;
+                Console.WriteLine($"No event found with ID: {id}");
+                return null;
             }
-            catch
+
+            Console.WriteLine($"Event found: {eventEntity.Title}");
+            return new DetailedEventDTO
             {
-                return false;
-            }
+                Title = eventEntity.Title,
+                Description = eventEntity.Description,
+                Date = eventEntity.Date,
+                StartTime = eventEntity.StartTime,
+                EndTime = eventEntity.EndTime,
+                Location = eventEntity.Location,
+                AdminApproval = eventEntity.AdminApproval
+            };
+        }
+
+
+
+
+        public async Task<Event> AddEvent(DTOEvent newEvent)
+        {
+            // Map the DTO to the Event entity
+            var eventToAdd = new Event
+            {
+                Title = newEvent.Title,
+                Description = newEvent.Description,
+                Date = newEvent.Date,
+                StartTime = newEvent.StartTime,
+                EndTime = newEvent.EndTime,
+                Location = newEvent.Location,
+                AdminApproval = newEvent.AdminApproval
+            };
+
+            // Add event to the database
+            _context.Events.Add(eventToAdd);
+            await _context.SaveChangesAsync();
+
+            return eventToAdd; // Return the saved event
         }
 
         public bool UpdateEvent(int id, Event updatedEvent)
