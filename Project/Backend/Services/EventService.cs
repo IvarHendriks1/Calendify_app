@@ -25,7 +25,7 @@ namespace CalendifyApp.Services
                 .FirstOrDefault(e => e.Id == id);
         }
 
-        public async Task<Event> AddEvent(CreateEventDto newEvent)
+        public async Task<Event> AddEvent(DTOEvent newEvent)
         {
             // Map the DTO to the Event entity
             var eventToAdd = new Event

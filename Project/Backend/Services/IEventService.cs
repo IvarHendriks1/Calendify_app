@@ -8,7 +8,7 @@ namespace CalendifyApp.Services
     {
         List<Event> GetAllEvents();
         Event? GetEventById(int id);
-        Task<Event> AddEvent(CreateEventDto newEvent);
+        Task<Event> AddEvent(DTOEvent newEvent);
         bool UpdateEvent(int id, Event updatedEvent);
         bool DeleteEvent(int id);
         List<EventAttendance> GetAllReviews();

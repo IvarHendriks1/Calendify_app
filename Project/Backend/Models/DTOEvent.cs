@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-public class CreateEventDto
+public class DTOEvent
 {
     [Required]
     public string Title { get; set; }

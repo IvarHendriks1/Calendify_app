@@ -39,7 +39,7 @@ namespace CalendifyApp.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AddEvent([FromBody] CreateEventDto eventDto)
+        public async Task<IActionResult> AddEvent([FromBody] DTOEvent eventDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
