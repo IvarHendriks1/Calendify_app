@@ -3,8 +3,8 @@ POST http://localhost:5001/api/Login
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "password123"
+  "username": "admin1",
+  "password": "adminpass1"
 }
 ################
 
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
   "username": "John",
-  "password": "password"
+  "password": "Password1"
 }
 ################
 
@@ -36,7 +36,7 @@ Content-Type: application/json
   "StartTime": "09:00:00",
   "EndTime": "17:00:00",
   "Location": "Convention Center, Hall A",
-  "AdminApproval": false
+  "AdminApproval": true 
 }
 
 ####

@@ -15,7 +15,7 @@ namespace CalendifyApp.Services
             _context = context;
         }
 
-        public async Task<bool> IsDateBookedAsync(int userId, DateOnly date)
+        public async Task<bool> IsDateBookedAsync(int userId, DateTime date)
         {
             return await _context.Attendance.AnyAsync(a => a.UserId == userId && a.Date == date);
         }
@@ -26,7 +26,7 @@ namespace CalendifyApp.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> RemoveAttendanceAsync(int userId, DateOnly date)
+        public async Task<bool> RemoveAttendanceAsync(int userId, DateTime date)
         {
             var existingAttendance = await _context.Attendance
                 .FirstOrDefaultAsync(a => a.UserId == userId && a.Date == date);
@@ -41,7 +41,7 @@ namespace CalendifyApp.Services
             return false;
         }
 
-        public async Task<List<int>> GetUserIdsByDateAsync(DateOnly date)
+        public async Task<List<int>> GetUserIdsByDateAsync(DateTime date)
         {
             return await _context.Attendance
                 .Where(a => a.Date == date)
@@ -49,12 +49,12 @@ namespace CalendifyApp.Services
                 .ToListAsync();
         }
 
-        public async Task<List<DateOnly>> GetAttendanceDatesByUserAsync(int userId)
-        {
-            return await _context.Attendance
-                .Where(a => a.UserId == userId)
-                .Select(a => a.Date)
-                .ToListAsync();
-        }
+        // public async Task<List<DateOnly>> GetAttendanceDatesByUserAsync(int userId)
+        // {
+        //     return await _context.Attendance
+        //         .Where(a => a.UserId == userId)
+        //         .Select(a => a.Date)
+        //         .ToListAsync();
+        // }
     }
 }
