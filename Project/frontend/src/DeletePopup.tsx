@@ -6,7 +6,7 @@ const DeletePopup: React.FC<{ onDelete: () => void; onCancel: () => void }> = ({
   return (
     <div className="popup-overlay">
       <div className="popup-container">
-        <div className="popup-message">Are you sure you want to delete this item?</div>
+        <div className="popup-message">Are you sure you want to delete this event?</div>
         <button className="popup-cancel" onClick={onCancel}>Cancel</button>
         <button className="popup-delete" onClick={onDelete}>Delete</button>
       </div>
