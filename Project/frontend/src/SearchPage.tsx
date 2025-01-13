@@ -20,7 +20,9 @@ const SearchPage: React.FC = () => {
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [attendees, setAttendees] = useState<Attendee[]>([]);
-  const [popupEventId, setPopupEventId] = useState<number | null>(null);
+  const [popupEvent, setPopupEvent] = useState<Event | null>(null);
+  const [noAttendeesPopup, setNoAttendeesPopup] = useState<string | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
   const [loggedInUserId] = useState<number>(2); // Mock logged-in user ID for testing
   const [attendedEvents, setAttendedEvents] = useState<number[]>([]);
 
@@ -70,53 +72,59 @@ const SearchPage: React.FC = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleViewAttendees = async (eventId: number) => {
+  const handleViewAttendees = async (event: Event) => {
     try {
       const response = await fetch(
-        `http://localhost:5001/api/EventAttendance/attendees/${eventId}`
+        `http://localhost:5001/api/EventAttendance/attendees/${event.id}`
       );
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
       const data: Attendee[] = await response.json();
-      setAttendees(data);
-      setPopupEventId(eventId);
+      if (data.length === 0) {
+        setNoAttendeesPopup(`No attendees for "${event.title}" yet.`);
+      } else {
+        setAttendees(data);
+        setPopupEvent(event);
+      }
     } catch (error) {
       console.error('Error fetching attendees:', error);
     }
   };
 
-  const handleAttendEvent = async (eventId: number) => {
+  const handleAttendEvent = async (event: Event) => {
     try {
       const response = await fetch('http://localhost:5001/api/EventAttendance/attend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: loggedInUserId, eventId }),
+        body: JSON.stringify({ userId: loggedInUserId, eventId: event.id }),
       });
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-      setAttendedEvents([...attendedEvents, eventId]);
+      setAttendedEvents([...attendedEvents, event.id]);
+      setConfirmationMessage(`You have successfully attended "${event.title}".`);
     } catch (error) {
       console.error('Error attending event:', error);
     }
   };
 
-  const handleLeaveEvent = async (eventId: number) => {
+  const handleLeaveEvent = async (event: Event) => {
     try {
       const response = await fetch('http://localhost:5001/api/EventAttendance/remove', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: loggedInUserId, eventId }),
+        body: JSON.stringify({ userId: loggedInUserId, eventId: event.id }),
       });
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-      setAttendedEvents(attendedEvents.filter((id) => id !== eventId));
+      setAttendedEvents(attendedEvents.filter((id) => id !== event.id));
+      setConfirmationMessage(`You have successfully left "${event.title}".`);
     } catch (error) {
       console.error('Error leaving event:', error);
     }
@@ -146,21 +154,21 @@ const SearchPage: React.FC = () => {
                 <p>Location: {event.location}</p>
                 <button
                   style={styles.button}
-                  onClick={() => handleViewAttendees(event.id)}
+                  onClick={() => handleViewAttendees(event)}
                 >
                   View Attendees
                 </button>
                 {attendedEvents.includes(event.id) ? (
                   <button
                     style={{ ...styles.button, backgroundColor: 'red' }}
-                    onClick={() => handleLeaveEvent(event.id)}
+                    onClick={() => handleLeaveEvent(event)}
                   >
                     Leave Event
                   </button>
                 ) : (
                   <button
                     style={{ ...styles.button, backgroundColor: 'green' }}
-                    onClick={() => handleAttendEvent(event.id)}
+                    onClick={() => handleAttendEvent(event)}
                   >
                     Attend Event
                   </button>
@@ -173,9 +181,10 @@ const SearchPage: React.FC = () => {
         </div>
       </div>
 
-      {popupEventId && (
+      {/* Attendees Popup */}
+      {popupEvent && (
         <div style={styles.attendeesPopup}>
-          <h2>Attendees for Event ID {popupEventId}</h2>
+          <h2>Attendees for "{popupEvent.title}"</h2>
           <ul>
             {attendees.map((attendee) => (
               <li key={attendee.userId}>{attendee.userName}</li>
@@ -183,7 +192,33 @@ const SearchPage: React.FC = () => {
           </ul>
           <button
             style={{ ...styles.button, backgroundColor: 'gray' }}
-            onClick={() => setPopupEventId(null)}
+            onClick={() => setPopupEvent(null)}
+          >
+            Close
+          </button>
+        </div>
+      )}
+
+      {/* No Attendees Popup */}
+      {noAttendeesPopup && (
+        <div style={styles.noAttendeesPopup}>
+          <p>{noAttendeesPopup}</p>
+          <button
+            style={{ ...styles.button, backgroundColor: 'gray' }}
+            onClick={() => setNoAttendeesPopup(null)}
+          >
+            Close
+          </button>
+        </div>
+      )}
+
+      {/* Confirmation Popup */}
+      {confirmationMessage && (
+        <div style={styles.confirmationPopup}>
+          <p>{confirmationMessage}</p>
+          <button
+            style={{ ...styles.button, backgroundColor: 'gray' }}
+            onClick={() => setConfirmationMessage(null)}
           >
             Close
           </button>
@@ -259,6 +294,32 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: '1px solid #ccc',
     borderRadius: '8px',
     padding: '16px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  confirmationPopup: {
+    position: 'fixed',
+    top: '30%',
+    left: '50%',
+    transform: 'translate(-50%, -30%)',
+    width: '300px',
+    backgroundColor: '#fff',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    padding: '16px',
+    textAlign: 'center',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  noAttendeesPopup: {
+    position: 'fixed',
+    top: '30%',
+    left: '50%',
+    transform: 'translate(-50%, -30%)',
+    width: '300px',
+    backgroundColor: '#fff',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    padding: '16px',
+    textAlign: 'center',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
 };
