@@ -13,20 +13,63 @@ export const EventCreator: React.FC = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    // Navigate to '/menu' wanneer back is geklikt maar weet nog hoe die link heet dus gaat nu gwn zo zijn
-    // ik ga dit maken wanneer voorpagina is gemaakt
+    // Navigate to '/menu' when back is clicked
     navigate('/menu');
   };
+
+  const handleCreateEvent = async () => {
+    if (new Date(date) < new Date()) {
+      alert("Event date cannot be in the past.");
+      return;
+    }
   
-  const handleCreateEvent = () => {
-    // Handle event creation logic
-    console.log({ title, description, date, startTime, endTime, location});
-    alert("Event created!");
+    if (startTime >= endTime) {
+      alert("End time must be after start time.");
+      return;
+    }
+    
+    const eventData = {
+      title,
+      description,
+      date,
+      startTime,
+      endTime,
+      location,
+      adminApproval: true, // Hardcoded for simplicity
+    };
+
+    try {
+      const response = await fetch('http://localhost:5001/api/Events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventData),
+      });
+
+      if (response.ok) {
+        alert("Event created successfully!");
+        // Optionally clear the form fields
+        setTitle("");
+        setDescription("");
+        setDate("");
+        setStartTime("");
+        setEndTime("");
+        setLocation("");
+      } else {
+        const errorData = await response.json();
+        console.error('Error creating event:', errorData);
+        alert(`Error: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      alert("Failed to create event. Please try again.");
+    }
   };
 
   return (
     <div className="container">
-      <button className="back-button">Back</button>
+      <button className="back-button" onClick={handleClick}>Back</button>
       <div className="form-container">
         <input
           className="input"
@@ -59,7 +102,7 @@ export const EventCreator: React.FC = () => {
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
         />
-          <input
+        <input
           className="input"
           type="text"
           placeholder="Location"
