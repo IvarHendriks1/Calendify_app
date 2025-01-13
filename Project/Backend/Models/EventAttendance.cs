@@ -1,4 +1,6 @@
-﻿namespace CalendifyApp.Models
+﻿using System.Text.Json.Serialization;
+
+namespace CalendifyApp.Models
 {
     public class EventAttendance
     {
@@ -8,6 +10,7 @@
         public int? Rating { get; set; } // Nullable in case rating is optional
         public string Feedback { get; set; }
 
+        [JsonIgnore]
         public User User { get; set; }
         public Event Event { get; set; }
     }
