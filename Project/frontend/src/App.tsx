@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserInput } from './LoginPage';
 import { EventCreator } from './EvenCreator';
 import { GreetingPage } from './CalenderPage';
+import { AlterEvent } from './AlterEvent';
 import SearchPage from './SearchPage';
 
 const App: React.FC = () => {
@@ -14,6 +15,7 @@ const App: React.FC = () => {
         <Route path="/greeting" element={<GreetingPage />} />
         <Route path="/event" element={<EventCreator />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/alter" element={<AlterEvent />} />
       </Routes>
     </Router>
   );

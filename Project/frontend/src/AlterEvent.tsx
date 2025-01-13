@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import "./EventCreator.css";
+import "./AlterEvent.css";
 
-export const EventCreator: React.FC = () => {
+export const AlterEvent: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -18,10 +18,10 @@ export const EventCreator: React.FC = () => {
     navigate('/menu');
   };
   
-  const handleCreateEvent = () => {
+  const handleAlterEvent = () => {
     // Handle event creation logic
     console.log({ title, description, date, startTime, endTime, location});
-    alert("Event created!");
+    alert("Event alterd!");
   };
 
   return (
@@ -66,8 +66,8 @@ export const EventCreator: React.FC = () => {
           value={location}
           onChange={(e) => setLocation(e.target.value)}
         />
-        <button className="create-button" onClick={handleCreateEvent}>
-          Create Event
+        <button className="alter-button" onClick={handleAlterEvent}>
+          Alter Event
         </button>
       </div>
     </div>
