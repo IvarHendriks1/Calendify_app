@@ -6,6 +6,12 @@
     font-family: Arial, sans-serif;
   }
   
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
   .back-button {
     align-self: flex-start;
     margin-bottom: 10px;
@@ -54,5 +60,18 @@
   
   .alter-button:hover {
     background-color: #0056b3;
+  }
+  
+  /* Style for the time input fields (Begin Time and End Time) */
+  .input[type="time"] {
+    width: 290px; /* Adjust width to make time inputs smaller */
+    padding: 5px;
+    font-size: 12px;
+  }
+  
+  .label {
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #333;
   }
   

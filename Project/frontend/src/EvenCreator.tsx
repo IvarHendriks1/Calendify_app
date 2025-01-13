@@ -70,6 +70,7 @@ export const EventCreator: React.FC = () => {
   return (
     <div className="container">
       <button className="back-button" onClick={handleClick}>Back</button>
+      <h1>Create Event</h1>
       <div className="form-container">
         <input
           className="input"
@@ -86,22 +87,28 @@ export const EventCreator: React.FC = () => {
         />
         <input
           className="input"
+          placeholder="Event Date"
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
+        
+        <label className="label">Begin Time</label>
         <input
           className="input"
           type="time"
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
         />
+
+        <label className="label">End Time</label>
         <input
           className="input"
           type="time"
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
         />
+
         <input
           className="input"
           type="text"
