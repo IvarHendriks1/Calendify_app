@@ -7,7 +7,7 @@ Cookie: AdminLoggedIn=admin1
 
 # User Login
 POST http://localhost:5001/api/SimulateUserLogin
-Content-Type: application/json
+Cookie: UserLoggedIn=John
 
 
 ################
@@ -55,7 +55,7 @@ Content-Type: application/json
 ####
 
 # Delete Event (Admin Only)
-DELETE http://localhost:5001/api/Events/1
+DELETE http://localhost:5001/api/Events/7
 ####
 
 # Get All Reviews

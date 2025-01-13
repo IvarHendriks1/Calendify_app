@@ -10,31 +10,55 @@ interface Event {
   location: string;
 }
 
-const SearchPage: React.FC = () => {
-  const [events, setEvents] = useState<Event[]>([]); // All events from the backend
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]); // Filtered events
-  const [searchQuery, setSearchQuery] = useState<string>(''); // User input for search
+interface Attendee {
+  userId: number;
+  userName: string;
+}
 
-  // Fetch events from the backend when the component loads
+const SearchPage: React.FC = () => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [attendees, setAttendees] = useState<Attendee[]>([]);
+  const [popupEventId, setPopupEventId] = useState<number | null>(null);
+  const [loggedInUserId] = useState<number>(2); // Mock logged-in user ID for testing
+  const [attendedEvents, setAttendedEvents] = useState<number[]>([]);
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/Events'); // Replace with your backend endpoint
+        const response = await fetch('http://localhost:5001/api/Events');
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
         }
         const data: Event[] = await response.json();
         setEvents(data);
-        setFilteredEvents(data); // Initialize filtered events
+        setFilteredEvents(data);
       } catch (error) {
         console.error('Error fetching events:', error);
       }
     };
 
-    fetchEvents();
-  }, []);
+    const fetchAttendedEvents = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/EventAttendance/user/${loggedInUserId}/attended-events`
+        );
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data: Event[] = await response.json();
+        const attendedEventIds = data.map((event) => event.id);
+        setAttendedEvents(attendedEventIds);
+      } catch (error) {
+        console.error('Error fetching attended events:', error);
+      }
+    };
 
-  // Filter events based on the search query
+    fetchEvents();
+    fetchAttendedEvents();
+  }, [loggedInUserId]);
+
   useEffect(() => {
     const filtered = events.filter((event) =>
       event.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -44,6 +68,58 @@ const SearchPage: React.FC = () => {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+  };
+
+  const handleViewAttendees = async (eventId: number) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/EventAttendance/attendees/${eventId}`
+      );
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      const data: Attendee[] = await response.json();
+      setAttendees(data);
+      setPopupEventId(eventId);
+    } catch (error) {
+      console.error('Error fetching attendees:', error);
+    }
+  };
+
+  const handleAttendEvent = async (eventId: number) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/EventAttendance/attend', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: loggedInUserId, eventId }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      setAttendedEvents([...attendedEvents, eventId]);
+    } catch (error) {
+      console.error('Error attending event:', error);
+    }
+  };
+
+  const handleLeaveEvent = async (eventId: number) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/EventAttendance/remove', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: loggedInUserId, eventId }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      setAttendedEvents(attendedEvents.filter((id) => id !== eventId));
+    } catch (error) {
+      console.error('Error leaving event:', error);
+    }
   };
 
   return (
@@ -68,6 +144,27 @@ const SearchPage: React.FC = () => {
                   {event.startTime} - {event.endTime}
                 </p>
                 <p>Location: {event.location}</p>
+                <button
+                  style={styles.button}
+                  onClick={() => handleViewAttendees(event.id)}
+                >
+                  View Attendees
+                </button>
+                {attendedEvents.includes(event.id) ? (
+                  <button
+                    style={{ ...styles.button, backgroundColor: 'red' }}
+                    onClick={() => handleLeaveEvent(event.id)}
+                  >
+                    Leave Event
+                  </button>
+                ) : (
+                  <button
+                    style={{ ...styles.button, backgroundColor: 'green' }}
+                    onClick={() => handleAttendEvent(event.id)}
+                  >
+                    Attend Event
+                  </button>
+                )}
               </div>
             ))
           ) : (
@@ -75,6 +172,23 @@ const SearchPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {popupEventId && (
+        <div style={styles.attendeesPopup}>
+          <h2>Attendees for Event ID {popupEventId}</h2>
+          <ul>
+            {attendees.map((attendee) => (
+              <li key={attendee.userId}>{attendee.userName}</li>
+            ))}
+          </ul>
+          <button
+            style={{ ...styles.button, backgroundColor: 'gray' }}
+            onClick={() => setPopupEventId(null)}
+          >
+            Close
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -126,6 +240,26 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginBottom: '10px',
     borderRadius: '4px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  button: {
+    margin: '5px',
+    padding: '10px 15px',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+  },
+  attendeesPopup: {
+    position: 'fixed',
+    top: '20%',
+    left: '50%',
+    transform: 'translate(-50%, -20%)',
+    width: '400px',
+    backgroundColor: '#fff',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    padding: '16px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
 };
 
