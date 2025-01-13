@@ -61,5 +61,13 @@ namespace CalendifyApp.Services
             _context.SaveChanges();
             return 0;
         }
+
+        // public int ForgotPassword(string email){
+        //     if (email is null) return 0;
+        //     if (_context.Users.SingleOrDefault(x => x.Email == email) == null) return 0;
+        //     //random 6 digit number
+
+
+        // }
     }
 }

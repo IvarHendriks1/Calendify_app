@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 
 export const CalenderPage: React.FC = () => {
   const location = useLocation();
-  const { username } = location.state || { username: 'Guest' }; // Fallback to 'Guest' if no username is provided
+  const { username } = location.state || { username: 'Guest' };
 
   return (
     <div>
