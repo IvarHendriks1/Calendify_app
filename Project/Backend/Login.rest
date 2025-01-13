@@ -27,8 +27,8 @@ POST http://localhost:5001/api/Login
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "password123"
+  "username": "admin1",
+  "password": "password1"
 }
 ################
 
@@ -37,8 +37,21 @@ POST http://localhost:5001/api/Login
 Content-Type: application/json
 
 {
-  "username": "John",
-  "password": "password"
+  "username": "Test",
+  "password": "secret"
+}
+################
+
+POST http://localhost:5001/api/Register
+Content-Type: application/json
+
+{
+  "Id": 8,
+  "Firstname": "Test",
+  "LastName": "Tester",
+  "Email":"Test@Tester.nl",
+  "password": "secret",
+  "RecurringDays": 5
 }
 ################
 

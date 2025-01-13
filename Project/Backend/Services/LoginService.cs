@@ -50,5 +50,16 @@ namespace CalendifyApp.Services
 
             return LoginStatus.IncorrectUsername;
         }
+
+        public int Register(User user)
+        {
+            if (_context.Users.SingleOrDefault(x => x.Email == user.Email) != null) return 3;
+            if (user.Password.Length < 6) return 2;
+            if (!user.Email.Contains("@") || !user.Email.Contains(".")) return 1;
+            user.Password = EncryptionHelper.EncryptPassword(user.Password);
+            _context.Users.Add(user);
+            _context.SaveChanges();
+            return 0;
+        }
     }
 }

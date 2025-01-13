@@ -2,6 +2,7 @@ using CalendifyApp.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using CalendifyApp.Utils;
 
 namespace CalendifyApp.Seeders
 {
@@ -12,11 +13,11 @@ namespace CalendifyApp.Seeders
             if (!context.Users.Any())
             {
                 context.Users.AddRange(
-                    new User { FirstName = "John", LastName = "Doe", Email = "john.doe@example.com", Password = "password1", RecurringDays = 1 },
-                    new User { FirstName = "Jane", LastName = "Smith", Email = "jane.smith@example.com", Password = "password2", RecurringDays = 2 },
-                    new User { FirstName = "Alice", LastName = "Johnson", Email = "alice.johnson@example.com", Password = "password3", RecurringDays = 0 },
-                    new User { FirstName = "Bob", LastName = "Brown", Email = "bob.brown@example.com", Password = "password4", RecurringDays = 1 },
-                    new User { FirstName = "Charlie", LastName = "Davis", Email = "charlie.davis@example.com", Password = "password5", RecurringDays = 4 }
+                    new User { FirstName = "John", LastName = "Doe", Email = "john.doe@example.com", Password = EncryptionHelper.EncryptPassword("password1"), RecurringDays = 1 },
+                    new User { FirstName = "Jane", LastName = "Smith", Email = "jane.smith@example.com", Password = EncryptionHelper.EncryptPassword("password2"), RecurringDays = 2 },
+                    new User { FirstName = "Alice", LastName = "Johnson", Email = "alice.johnson@example.com", Password = EncryptionHelper.EncryptPassword("password3"), RecurringDays = 0 },
+                    new User { FirstName = "Bob", LastName = "Brown", Email = "bob.brown@example.com", Password = EncryptionHelper.EncryptPassword("password4"), RecurringDays = 1 },
+                    new User { FirstName = "Charlie", LastName = "Davis", Email = "charlie.davis@example.com", Password = EncryptionHelper.EncryptPassword("password5"), RecurringDays = 4 }
                 );
                 context.SaveChanges();
             }
@@ -60,11 +61,11 @@ namespace CalendifyApp.Seeders
             if (!context.Admin.Any())
             {
                 context.Admin.AddRange(
-                    new Admin { Username = "admin1", Password = "adminpass1", Email = "admin1@example.com" },
-                    new Admin { Username = "admin2", Password = "adminpass2", Email = "admin2@example.com" },
-                    new Admin { Username = "admin3", Password = "adminpass3", Email = "admin3@example.com" },
-                    new Admin { Username = "admin4", Password = "adminpass4", Email = "admin4@example.com" },
-                    new Admin { Username = "admin5", Password = "adminpass5", Email = "admin5@example.com" }
+                    new Admin { Username = "admin1", Password = EncryptionHelper.EncryptPassword("adminpass1"), Email = "admin1@example.com" },
+                    new Admin { Username = "admin2", Password = EncryptionHelper.EncryptPassword("adminpass2"), Email = "admin2@example.com" },
+                    new Admin { Username = "admin3", Password = EncryptionHelper.EncryptPassword("adminpass3"), Email = "admin3@example.com" },
+                    new Admin { Username = "admin4", Password = EncryptionHelper.EncryptPassword("adminpass4"), Email = "admin4@example.com" },
+                    new Admin { Username = "admin5", Password = EncryptionHelper.EncryptPassword("adminpass5"), Email = "admin5@example.com" }
                 );
                 context.SaveChanges();
             }
