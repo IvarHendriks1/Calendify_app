@@ -26,12 +26,6 @@ namespace CalendifyApp.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            // Attendance: User FK
-            modelBuilder.Entity<Attendance>()
-                .HasOne(a => a.User)
-                .WithMany(u => u.Attendances)
-                .HasForeignKey(a => a.UserId);
-
             // EventAttendance: User FK
             modelBuilder.Entity<EventAttendance>()
                 .HasOne(ea => ea.User)
