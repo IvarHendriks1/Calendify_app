@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserInput } from './LoginPage';
 import { EventCreator } from './EvenCreator';
-import { GreetingPage } from './CalenderPage';
+import { CalenderPage } from './CalenderPage';
 import SearchPage from './SearchPage';
 
 const App: React.FC = () => {
@@ -11,7 +11,7 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<UserInput />} />
-        <Route path="/greeting" element={<GreetingPage />} />
+        <Route path="/calender" element={<CalenderPage />} />
         <Route path="/event" element={<EventCreator />} />
         <Route path="/search" element={<SearchPage />} />
       </Routes>
