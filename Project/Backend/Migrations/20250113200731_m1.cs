@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Project.Migrations
 {
     /// <inheritdoc />
-    public partial class CorrectModels : Migration
+    public partial class m1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -90,8 +90,9 @@ namespace Project.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
                     EventId = table.Column<int>(type: "INTEGER", nullable: false),
+                    AttendedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Rating = table.Column<int>(type: "INTEGER", nullable: true),
-                    Feedback = table.Column<string>(type: "TEXT", nullable: false)
+                    Feedback = table.Column<string>(type: "TEXT", maxLength: 250, nullable: true)
                 },
                 constraints: table =>
                 {

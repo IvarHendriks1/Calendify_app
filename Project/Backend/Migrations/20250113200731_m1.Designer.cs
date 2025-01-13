@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Project.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20250108101800_CorrectModels")]
-    partial class CorrectModels
+    [Migration("20250113200731_m1")]
+    partial class m1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
 
             modelBuilder.Entity("CalendifyApp.Models.Admin", b =>
                 {
@@ -103,11 +103,14 @@ namespace Project.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("AttendedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("EventId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Feedback")
-                        .IsRequired()
+                        .HasMaxLength(250)
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("Rating")
@@ -158,7 +161,7 @@ namespace Project.Migrations
             modelBuilder.Entity("CalendifyApp.Models.Attendance", b =>
                 {
                     b.HasOne("CalendifyApp.Models.User", "User")
-                        .WithMany("Attendances")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -192,8 +195,6 @@ namespace Project.Migrations
 
             modelBuilder.Entity("CalendifyApp.Models.User", b =>
                 {
-                    b.Navigation("Attendances");
-
                     b.Navigation("EventAttendances");
                 });
 #pragma warning restore 612, 618
