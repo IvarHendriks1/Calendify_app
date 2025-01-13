@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IEventAttendanceService, EventAttendanceService>();
 builder.Logging.AddConsole();
 builder.Services.AddDistributedMemoryCache(); // For session storage
 builder.Services.AddSession(options =>
