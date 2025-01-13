@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import "./EventCreator.css";
+import "./AlterEvent.css";
 
-export const EventCreator: React.FC = () => {
+export const AlterEvent: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -17,7 +17,7 @@ export const EventCreator: React.FC = () => {
     navigate('/menu');
   };
 
-  const handleCreateEvent = async () => {
+  const handleAlterEvent = async () => {
     if (new Date(date) < new Date()) {
       alert("Event date cannot be in the past.");
       return;
@@ -40,7 +40,7 @@ export const EventCreator: React.FC = () => {
 
     try {
       const response = await fetch('http://localhost:5001/api/Events', {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -48,7 +48,7 @@ export const EventCreator: React.FC = () => {
       });
 
       if (response.ok) {
-        alert("Event created successfully!");
+        alert("Event alterd successfully!");
         // Optionally clear the form fields
         setTitle("");
         setDescription("");
@@ -58,19 +58,19 @@ export const EventCreator: React.FC = () => {
         setLocation("");
       } else {
         const errorData = await response.json();
-        console.error('Error creating event:', errorData);
+        console.error('Error altering event:', errorData);
         alert(`Error: ${response.statusText}`);
       }
     } catch (error) {
       console.error('Network error:', error);
-      alert("Failed to create event. Please try again.");
+      alert("Failed to alter event. Please try again.");
     }
   };
 
   return (
     <div className="container">
       <button className="back-button" onClick={handleClick}>Back</button>
-      <h1>Create Event</h1>
+      <h1>Alter Event</h1>
       <div className="form-container">
         <input
           className="input"
@@ -116,8 +116,8 @@ export const EventCreator: React.FC = () => {
           value={location}
           onChange={(e) => setLocation(e.target.value)}
         />
-        <button className="create-button" onClick={handleCreateEvent}>
-          Create Event
+        <button className="alter-button" onClick={handleAlterEvent}>
+          Alter Event
         </button>
       </div>
     </div>

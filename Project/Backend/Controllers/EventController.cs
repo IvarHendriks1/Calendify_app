@@ -45,6 +45,12 @@ namespace CalendifyApp.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+                if (eventDto.Date < DateTime.UtcNow.Date)
+                    return BadRequest("Event date cannot be in the past.");
+
+                if (eventDto.StartTime >= eventDto.EndTime)
+                    return BadRequest("End time must be after start time.");
+
             // Call the AddEvent method from the service
             var createdEvent = await _eventService.AddEvent(eventDto);
 
