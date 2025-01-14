@@ -3,13 +3,14 @@ import './CalenderPage.css';
 
 
 type Event = {
-  Id: number;
-  Title: string;
-  Description: string;
-  Date: string;
-  StartTime: string;
-  EndTime: string;
+  id: number;
+  title: string;
+  description: string;
+  date: string;
+  startTime: string;
+  endTime: string;
 };
+
 
 export const CalendarPage: React.FC = () => {
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
@@ -45,6 +46,7 @@ export const CalendarPage: React.FC = () => {
       if (response.ok) {
         console.log('Get events successful: ', response.statusText);
         const data = await response.json();
+        console.log('Data gekregen van API:', data);
         setEvents(data);
       } else {
         alert('Unable to load events')
@@ -61,6 +63,7 @@ export const CalendarPage: React.FC = () => {
   useEffect(() => {
     getEvents();
   }, [currentWeekStart]);
+
 
   const goToNextWeek = () => {
     const nextWeekStart = new Date(currentWeekStart);
@@ -82,9 +85,13 @@ export const CalendarPage: React.FC = () => {
     console.log('Create Event clicked');
   };
 
+  const handleDeleteEvent = () => {
+    console.log('Create Event clicked');
+  };
+
   const handleAttendEvent = () => {
     if (selectedEvent) {
-      console.log(`Attending event: ${selectedEvent.Title}`);
+      console.log(`Attending event: ${selectedEvent.title}`);
     }
   };
 
@@ -162,7 +169,7 @@ export const CalendarPage: React.FC = () => {
         <div className="calendar-days">
           {weekDates.map((date, index) => {
             const dateStr = date.toISOString().split('T')[0]; 
-            const eventsForDay = events.filter((event) => event.Date === dateStr);
+            const eventsForDay = events.filter((event) => event.date.split('T')[0] === dateStr);
 
             return (
               <div key={index} className="calendar-day">
@@ -176,11 +183,11 @@ export const CalendarPage: React.FC = () => {
                   {eventsForDay.length > 0 ? (
                     eventsForDay.map((event) => (
                       <div
-                        key={event.Id}
+                        key={event.id}
                         className="calendar-event"
                         onClick={() => handleEventSelect(event)}
                       >
-                        {event.Title} - {event.EndTime}
+                        {event.title} - {event.startTime.split(":")[0]+":"+event.startTime.split(":")[1]}
                       </div>
                     ))
                   ) : (
@@ -195,10 +202,10 @@ export const CalendarPage: React.FC = () => {
         <aside className="event-info">
           {selectedEvent ? (
             <>
-              <h3>{selectedEvent.Title}</h3>
+              <h3>{selectedEvent.title}</h3>
               <p>
-                Date: {selectedEvent.Date} <br />
-                Time: {selectedEvent.StartTime} - {selectedEvent.EndTime}
+                Date: {selectedEvent.date.split("T")[0]} <br />
+                Time: {selectedEvent.startTime.split(":")[0]+":"+selectedEvent.startTime.split(":")[1]} - {selectedEvent.endTime.split(":")[0]+":"+selectedEvent.endTime.split(":")[1]}
               </p>
               <button onClick={handleAttendEvent}>Attend Event</button>
             </>
@@ -212,50 +219,11 @@ export const CalendarPage: React.FC = () => {
         <button className="create-event-button" onClick={handleCreateEvent}>
           Create Event
         </button>
-        <button className="delete-event-button" onClick={handleCreateEvent}>
+        <button className="delete-event-button" onClick={handleDeleteEvent}>
           Delete Event
         </button>
       </footer>
     </div>
   );
-};
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: '20px',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-  },
-  buttonContainer: {
-    display: 'flex',
-    gap: '10px',
-  },
-  button: {
-    padding: '10px 15px',
-    color: '#fff',
-    backgroundColor: '#007bff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  logoutButton: {
-    padding: '10px 15px',
-    color: '#fff',
-    backgroundColor: '#dc3545',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  statusMessage: {
-    marginTop: '20px',
-    padding: '10px',
-    backgroundColor: '#f8f9fa',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-  },
 };
 
