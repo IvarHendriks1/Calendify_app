@@ -1,13 +1,14 @@
-
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import './CalenderPage.css';
 
 
 type Event = {
-  id: number;
-  title: string;
-  date: string;
-  time: string;
+  Id: number;
+  Title: string;
+  Description: string;
+  Date: string;
+  StartTime: string;
+  EndTime: string;
 };
 
 export const CalendarPage: React.FC = () => {
@@ -26,14 +27,40 @@ export const CalendarPage: React.FC = () => {
     });
   };
 
+  
   const weekDates = getWeekDates(currentWeekStart);
 
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [events, setEvents] = useState<Event[]>([
-    { id: 1, title: 'Team Meeting', date: '2025-01-15', time: '11:00' },
-    { id: 2, title: 'Project Demo', date: '2025-01-15', time: '14:00' },
-    { id: 3, title: 'Code Review', date: '2025-01-16', time: '10:00' },
-  ]);
+  const [events, setEvents] = useState<Event[]>([]); 
+
+
+  const  getEvents = async () => {
+    try {
+      const response = await fetch('http://localhost:5001/api/Events', {
+        method: 'GET',
+      });
+
+      
+
+      if (response.ok) {
+        console.log('Get events successful: ', response.statusText);
+        const data = await response.json();
+        setEvents(data);
+      } else {
+        alert('Unable to load events')
+        console.error(response.statusText)
+      }
+
+    } catch (error) {
+      alert("Er is iets misgegaan");
+      console.error('Error fetching events:', error);
+    }
+
+  };
+
+  useEffect(() => {
+    getEvents();
+  }, [currentWeekStart]);
 
   const goToNextWeek = () => {
     const nextWeekStart = new Date(currentWeekStart);
@@ -57,7 +84,7 @@ export const CalendarPage: React.FC = () => {
 
   const handleAttendEvent = () => {
     if (selectedEvent) {
-      console.log(`Attending event: ${selectedEvent.title}`);
+      console.log(`Attending event: ${selectedEvent.Title}`);
     }
   };
 
@@ -135,7 +162,7 @@ export const CalendarPage: React.FC = () => {
         <div className="calendar-days">
           {weekDates.map((date, index) => {
             const dateStr = date.toISOString().split('T')[0]; 
-            const eventsForDay = events.filter((event) => event.date === dateStr);
+            const eventsForDay = events.filter((event) => event.Date === dateStr);
 
             return (
               <div key={index} className="calendar-day">
@@ -149,11 +176,11 @@ export const CalendarPage: React.FC = () => {
                   {eventsForDay.length > 0 ? (
                     eventsForDay.map((event) => (
                       <div
-                        key={event.id}
+                        key={event.Id}
                         className="calendar-event"
                         onClick={() => handleEventSelect(event)}
                       >
-                        {event.title} - {event.time}
+                        {event.Title} - {event.EndTime}
                       </div>
                     ))
                   ) : (
@@ -168,10 +195,10 @@ export const CalendarPage: React.FC = () => {
         <aside className="event-info">
           {selectedEvent ? (
             <>
-              <h3>{selectedEvent.title}</h3>
+              <h3>{selectedEvent.Title}</h3>
               <p>
-                Date: {selectedEvent.date} <br />
-                Time: {selectedEvent.time}
+                Date: {selectedEvent.Date} <br />
+                Time: {selectedEvent.StartTime} - {selectedEvent.EndTime}
               </p>
               <button onClick={handleAttendEvent}>Attend Event</button>
             </>
@@ -232,4 +259,3 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
 };
 
-export default CalenderPage;
