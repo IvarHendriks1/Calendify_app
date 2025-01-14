@@ -7,6 +7,7 @@ export const UserInput: React.FC = () => {
   const [username, setUsername] = useState<string>(''); // State for username
   const [password, setPassword] = useState<string>(''); // State for password
   const [showPassword, setShowPassword] = useState<boolean>(false); // State for toggling password visibility
+  const [loginStatus, setLoginStatus] = useState<string | null>(null); // State for showing login status
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -26,33 +27,49 @@ export const UserInput: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include cookies
         body: JSON.stringify(data),
       });
 
-      
-
       if (response.ok) {
         console.log('Login successful: ', response);
-        navigate('/calender', { state: { username } });
+        navigate('/calender', { state: { username } }); // Commented navigation
       } else {
         alert(response.statusText);
       }
-
     } catch (error) {
-      alert("Er is iets misgegaan");
-      console.error('Error fetching events:', error);
+      alert('Er is iets misgegaan');
+      console.error('Error logging in:', error);
     }
+  };
 
+  const handleCheckLoginStatus = async () => {
+    try {
+      const response = await fetch('http://localhost:5001/api/IsUserLoggedIn', {
+        method: 'GET',
+        credentials: 'include', // Include cookies
+      });
+
+      if (response.ok) {
+        const data = await response.text();
+        setLoginStatus(`Logged in as: ${data}`);
+      } else {
+        setLoginStatus('Not logged in.');
+      }
+    } catch (error) {
+      setLoginStatus('Error checking login status.');
+      console.error('Error checking login status:', error);
+    }
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword((curState) => !curState);
-  }
+  };
 
   return (
     <div>
-      <header className='LoginPage-header'>
-        <img src={logo} />
+      <header className="LoginPage-header">
+        <img src={logo} alt="Logo" />
         <div style={{ marginTop: '7vmin' }}>
           <label htmlFor="user">Username: </label>
           <input
@@ -78,7 +95,6 @@ export const UserInput: React.FC = () => {
             }}
             placeholder="Enter your password"
           />
-
           <button onClick={togglePasswordVisibility}>show password</button>
         </div>
 
@@ -88,11 +104,26 @@ export const UserInput: React.FC = () => {
         >
           Log In
         </button>
-        <p></p>
-        <p></p>
-        <p></p>
-        <p></p>
-        <p></p>
+
+        <button
+          onClick={handleCheckLoginStatus}
+          style={{
+            marginTop: '10px',
+            padding: '5px 10px',
+            backgroundColor: '#007BFF',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+          }}
+        >
+          Check Login Status
+        </button>
+
+        {loginStatus && (
+          <p style={{ marginTop: '10px', fontSize: '14px', color: '#333' }}>
+            {loginStatus}
+          </p>
+        )}
       </header>
     </div>
   );
