@@ -92,14 +92,14 @@ export const EventCreator: React.FC = () => {
           value={EventDate}
           onChange={(e) => setEventDate(e.target.value)}
         />
-        <label className="label">Begin Time (HH:mm:ss)</label>
+        <label className="label">Begin Time</label>
         <input
           className="input"
           type="time"
           value={StartTime}
           onChange={(e) => setStartTime(e.target.value)}
         />
-        <label className="label">End Time (HH:mm:ss)</label>
+        <label className="label">End Time</label>
         <input
           className="input"
           type="time"

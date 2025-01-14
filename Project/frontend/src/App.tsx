@@ -14,12 +14,14 @@ const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Retrieve the saved theme preference from localStorage
     return localStorage.getItem('theme') === 'dark';
+    // if its not true it start as false so it starts as white
   });
 
   // Function to toggle dark mode
   const toggleDarkMode = () => {
     setIsDarkMode((prevMode) => !prevMode);
   };
+  // prevMode is the previous value of isDarkMode.
 
   // Apply the dark mode class to the body
   useEffect(() => {
