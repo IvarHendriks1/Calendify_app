@@ -10,16 +10,6 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IEventAttendanceService, EventAttendanceService>();
 builder.Logging.AddConsole();
 builder.Services.AddDistributedMemoryCache(); // For session storage
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(10); // Set session timeout
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
-builder.Services.AddDbContext<MyContext>(options =>
-    options.UseSqlite("Data Source=calendify.db"));
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
@@ -31,6 +21,19 @@ builder.Services.AddCors(options =>
                   .AllowCredentials();
         });
 });
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".Calendify.Session";
+    options.IdleTimeout = TimeSpan.FromMinutes(10); // Set session timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.None; // Allow cookies across origins
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Force the Secure attribute
+});
+
+builder.Services.AddDbContext<MyContext>(options =>
+    options.UseSqlite("Data Source=calendify.db"));
+
 
 var app = builder.Build();
 
@@ -42,7 +45,7 @@ using (var scope = app.Services.CreateScope())
     DatabaseSeeder.Seed(context);    // Call the seeder to populate the database
 }
 
-app.UseCors(); 
+app.UseCors();
 
 app.UseSession();
 
