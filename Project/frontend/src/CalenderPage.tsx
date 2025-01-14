@@ -90,14 +90,15 @@ export const CalendarPage: React.FC = () => {
     navigate('/event');
   };
 
-  const handleDeleteEvent = () => {
+  const handleDeleteEvent = () => {//implement this
     console.log('Delete Event clicked');
-    navigate('/DeletePopup');
+    navigate('/delete-event');
   };
 
   const handleRegister = () => {
     console.log('Register clicked');
     navigate('/registerpopup');
+
   };
 
   const handleAttendEvent = () => {//implement this
@@ -274,4 +275,3 @@ export const CalendarPage: React.FC = () => {
     </div>
   );
 };
-
