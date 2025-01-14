@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace CalendifyApp.Controllers
 {
+    [AuthorizationFilter]
     [ApiController]
     [Route("api/Events")]
     public class EventController : Controller

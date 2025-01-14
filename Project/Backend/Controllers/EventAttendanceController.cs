@@ -7,6 +7,7 @@ using System;
 
 namespace CalendifyApp.Controllers
 {
+    [AuthorizationFilter]
     [ApiController]
     [Route("api/[controller]")]
     public class EventAttendanceController : ControllerBase
