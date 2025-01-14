@@ -22,12 +22,12 @@ export const EventCreator: React.FC = () => {
       alert("Event date cannot be in the past.");
       return;
     }
-  
+
     if (startTime >= endTime) {
       alert("End time must be after start time.");
       return;
     }
-    
+
     const eventData = {
       title,
       description,
@@ -92,7 +92,7 @@ export const EventCreator: React.FC = () => {
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
-        
+
         <label className="label">Begin Time</label>
         <input
           className="input"

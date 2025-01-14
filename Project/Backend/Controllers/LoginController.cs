@@ -37,15 +37,15 @@ public class LoginController : Controller
             return BadRequest("Invalid input");
 
         // Admin login
-        if (!string.IsNullOrEmpty(loginBody.Username) && 
-            _loginService.CheckPassword(loginBody.Username, loginBody.Password) == LoginStatus.Success)
+        if (!string.IsNullOrEmpty(loginBody.Email) &&
+            _loginService.CheckPassword(loginBody.Email, loginBody.Password) == LoginStatus.Success)
         {
             HttpContext.Session.SetString("AdminLoggedIn", $"{loginBody.Username}");
             return Ok("Successfully logged in as admin.");
         }
 
         // User login
-        if (!string.IsNullOrEmpty(loginBody.Email) && 
+        if (!string.IsNullOrEmpty(loginBody.Email) &&
             _loginService.CheckUserPassword(loginBody.Email, loginBody.Password) == LoginStatus.Success)
         {
             HttpContext.Session.SetString("UserLoggedIn", $"{loginBody.Email}");

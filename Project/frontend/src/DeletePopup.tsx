@@ -22,14 +22,14 @@ export const DeletePopUp: React.FC = () => {
   // Function to handle the deletion action
   const handleDeleteEvent = async () => {
     try {
-      
-      
+
+
       // Perform the delete operation (make an API call or modify your state)
       console.log("Event has been deleted.");
 
       // After deletion, close the popup and redirect to the menu
       setShowPopup(false); // Hide the popup
-      navigate('/menu'); // Navigate to the menu page
+      navigate('/calender'); // Navigate to the menu page
     } catch (error) {
       console.error('Error deleting event:', error);
       alert("Failed to delete the event.");

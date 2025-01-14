@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { UserInput } from './LoginPage';
 import { EventCreator } from './EvenCreator';
-import {CalendarPage}   from './CalenderPage';
+import { CalendarPage } from './CalenderPage';
 import { AlterEvent } from './AlterEvent';
 import { DeletePopUp } from './DeletePopup';
+import { RegisterPopup } from './ResgisterPopup';
 import SearchPage from './SearchPage';
 
 const App: React.FC = () => {
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/alter" element={<AlterEvent />} />
         <Route path="/DeletePopup" element={<DeletePopUp />} />
+        <Route path="/RegisterPopup" element={<RegisterPopup />} />
       </Routes>
     </Router>
   );
