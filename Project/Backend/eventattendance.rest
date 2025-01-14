@@ -1,10 +1,14 @@
+# Admin Login
+GET http://localhost:5001/api/SimulateAdminLogin
+Cookie: AdminLoggedIn=admin1
+
 ### Test POST: Attend an event (valid)
 POST http://localhost:5001/api/EventAttendance/attend
 Content-Type: application/json
 
 {
-    "userId": 1,
-    "eventId": 1
+    "userId": 2,
+    "eventId": 5
 }
 
 
@@ -29,7 +33,7 @@ Content-Type: application/json
 ### ADMIN ONLY ---------------------------------------------------
 
 ### Test GET: List attendees for an event (valid event)
-GET http://localhost:5001/api/EventAttendance/attendees/1
+GET http://localhost:5001/api/EventAttendance/attendees/5
 
 ### Test GET: List attendees for an event (event not found)
 GET http://localhost:5001/api/EventAttendance/attendees/999

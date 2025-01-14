@@ -18,6 +18,7 @@ namespace CalendifyApp.Services
                 .Include(e => e.EventAttendances) // Include for potential counts, even if null
                 .Select(e => new DetailedEventDTO
                 {
+                    Id = e.Id,
                     Title = e.Title,
                     Description = e.Description,
                     Date = e.Date,
@@ -45,6 +46,7 @@ namespace CalendifyApp.Services
             Console.WriteLine($"Event found: {eventEntity.Title}");
             return new DetailedEventDTO
             {
+                Id = eventEntity.Id,
                 Title = eventEntity.Title,
                 Description = eventEntity.Description,
                 Date = eventEntity.Date,
@@ -63,6 +65,7 @@ namespace CalendifyApp.Services
             // Map the DTO to the Event entity
             var eventToAdd = new Event
             {
+                Id = newEvent.Id,
                 Title = newEvent.Title,
                 Description = newEvent.Description,
                 Date = newEvent.Date,
@@ -84,6 +87,7 @@ namespace CalendifyApp.Services
             var existingEvent = _context.Events.FirstOrDefault(e => e.Id == id);
             if (existingEvent == null) return false;
 
+            existingEvent.Id = updatedEvent.Id;
             existingEvent.Title = updatedEvent.Title;
             existingEvent.Description = updatedEvent.Description;
             existingEvent.Date = updatedEvent.Date;
