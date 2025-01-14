@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AlterEvent.css";
 
@@ -13,17 +13,27 @@ export const AlterEvent: React.FC = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Check if admin is logged in
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+    if (isAdminLoggedIn !== "true") {
+      alert("You must be logged in as an admin to access this page.");
+      navigate("/login");
+      //login bestaat niet dus moet ff later erin zetten
+    }
+  }, [navigate]);
+
   const handleClick = () => {
     navigate("/menu");
   };
 
   const handleAlterEvent = async () => {
-    // trim is used to check if it a whitespace or just empty string
     if (!Id.trim()) {
       alert("ID is required.");
       return;
     }
 
+    // Ensure the Title field is not empty or just whitespace.
     if (!Title.trim()) {
       alert("Title is required.");
       return;

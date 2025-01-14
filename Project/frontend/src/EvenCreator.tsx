@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./EventCreator.css";
 
@@ -12,6 +12,15 @@ export const EventCreator: React.FC = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+      // Check if admin is logged in
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+      if (isAdminLoggedIn !== "true") {
+        alert("You must be logged in as an admin to access this page.");
+        navigate("/login");
+        //login bestaat niet dus moet ff later erin zetten
+      }
+    }, [navigate]);
   const handleClick = () => {
     navigate("/menu");
   };

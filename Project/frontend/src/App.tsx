@@ -5,7 +5,7 @@ import { UserInput } from './LoginPage';
 import { EventCreator } from './EvenCreator';
 import { CalenderPage } from './CalenderPage';
 import { AlterEvent } from './AlterEvent';
-import { DeletePopUp } from './DeletePopup';
+import { DeleteEvent } from './DeletePopup';
 import SearchPage from './SearchPage';
 import './Styles.css';
 
@@ -49,7 +49,7 @@ const App: React.FC = () => {
           <Route path="/event" element={<EventCreator />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/alter" element={<AlterEvent />} />
-          <Route path="/DeletePopup" element={<DeletePopUp />} />
+          <Route path="/delete-event" element={<DeleteEvent />} />
         </Routes>
       </div>
     </Router>
