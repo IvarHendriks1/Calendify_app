@@ -55,6 +55,26 @@ public class LoginController : Controller
         return Unauthorized("Invalid email, username, or password.");
     }
 
+    [HttpPost("Register")]
+    public IActionResult Register([FromBody] User user)
+    {
+        if (user is null) return BadRequest("Invallid input");
+        switch (_loginService.Register(user))
+        {
+            case 3:
+                return BadRequest("Email already in use by another account, try 'forgot password'.");
+            case 2:
+                return BadRequest("Password must be at least 6 characters long.");
+            case 1:
+                return BadRequest("Please use a valid Email.");
+            case 0:
+                return Ok($"Succesfully Registerd {user}");
+            default:
+                return BadRequest("Something went wrong");
+        }
+
+    }
+
     [HttpGet("IsAdminLoggedIn")]
     public IActionResult IsAdminLoggedIn()
     {

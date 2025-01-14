@@ -37,8 +37,8 @@ POST http://localhost:5001/api/Login
 Content-Type: application/json
 
 {
-  "email": "john.doe@example.com",
-  "password": "password1"
+  "email": "Test@Tester.nl",
+  "password": "secret"
 }
 ################
 
@@ -46,8 +46,13 @@ Content-Type: application/json
 #check if the Admin is logged in
 GET http://localhost:5001/api/IsAdminLoggedIn
 ###################
+POST http://localhost:5001/api/Register 
+Content-Type: application/json
 
-
+{
+"Id": 8, "Firstname": "Test", "LastName": "Tester", "Email":"Test@Tester.nl", "password": "secret", "RecurringDays": 5
+}
+##################
 #check if the User is logged in
 GET http://localhost:5001/api/IsUserLoggedIn
 ###################
