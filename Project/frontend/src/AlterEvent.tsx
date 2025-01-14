@@ -18,6 +18,42 @@ export const AlterEvent: React.FC = () => {
   };
 
   const handleAlterEvent = async () => {
+    // trim is used to check if it a whitespace or just empty string
+    if (!Id.trim()) {
+      alert("ID is required.");
+      return;
+    }
+
+    if (!Title.trim()) {
+      alert("Title is required.");
+      return;
+    }
+
+    if (!Description.trim()) {
+      alert("Description is required.");
+      return;
+    }
+
+    if (!EventDate.trim()) {
+      alert("Event date is required.");
+      return;
+    }
+
+    if (!StartTime.trim()) {
+      alert("Start time is required.");
+      return;
+    }
+
+    if (!EndTime.trim()) {
+      alert("End time is required.");
+      return;
+    }
+
+    if (!Location.trim()) {
+      alert("Location is required.");
+      return;
+    }
+
     if (new Date(EventDate) < new Date()) {
       alert("Event date cannot be in the past.");
       return;
