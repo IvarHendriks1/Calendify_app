@@ -57,7 +57,7 @@ namespace CalendifyApp.Controllers
             return CreatedAtAction(nameof(GetEventById), new { id = createdEvent.Id }, createdEvent);
         }
 
-        [AdminFilter]
+        //[AdminFilter]
         [HttpPut("{id}")]
         public IActionResult UpdateEvent(int id, [FromBody] UpdateEventDTO updatedEvent)
         {

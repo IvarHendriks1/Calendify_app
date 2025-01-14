@@ -22,11 +22,15 @@ export const DeletePopUp: React.FC = () => {
   // Function to handle the deletion action
   const handleDeleteEvent = async () => {
     try {
-      
-      
+      const response = await fetch("http://localhost:5001/api/Events", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        //body: JSON.stringify(eventData),
+      });
       // Perform the delete operation (make an API call or modify your state)
       console.log("Event has been deleted.");
-
       // After deletion, close the popup and redirect to the menu
       setShowPopup(false); // Hide the popup
       navigate('/menu'); // Navigate to the menu page

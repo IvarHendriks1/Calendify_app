@@ -29,7 +29,6 @@ export const AlterEvent: React.FC = () => {
     }
 
     const eventData = {
-      Id,
       Title,
       Description,
       Date: EventDate,
@@ -40,7 +39,7 @@ export const AlterEvent: React.FC = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5001/api/Events", {
+      const response = await fetch(`http://localhost:5001/api/Events/${Id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -49,7 +48,7 @@ export const AlterEvent: React.FC = () => {
       });
 
       if (response.ok) {
-        alert("Event Alterd successfully!");
+        alert("Event Altered successfully!");
         setId("");
         setTitle("");
         setDescription("");
@@ -59,7 +58,7 @@ export const AlterEvent: React.FC = () => {
         setLocation("");
       } else {
         const errorData = await response.json();
-        console.error("Error creating event:", errorData);
+        console.error("Error altering event:", errorData);
         alert(`Error: ${response.statusText}`);
       }
     } catch (error) {
@@ -75,7 +74,7 @@ export const AlterEvent: React.FC = () => {
       </button>
       <h1>Alter Event</h1>
       <div className="form-container">
-      <input
+        <input
           className="input"
           type="text"
           placeholder="ID"
