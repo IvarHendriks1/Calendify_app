@@ -61,5 +61,12 @@ namespace CalendifyApp.Services
         }
 
 
+        public int ForgotPassword()
+        {
+            Random random = new Random();
+            int randomNumberInRange = random.Next(100000, 999999);
+            return randomNumberInRange;
+        }
+
     }
 }

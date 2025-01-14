@@ -56,7 +56,8 @@ Content-Type: application/json
 #check if the User is logged in
 GET http://localhost:5001/api/IsUserLoggedIn
 ###################
-
+GET http://localhost:5001/api/ForgotPassword
+########################
 #logout User
 GET http://localhost:5001/api/Logout
 ###################

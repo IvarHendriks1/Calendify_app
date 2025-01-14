@@ -97,7 +97,7 @@ export const CalendarPage: React.FC = () => {
 
   const handleRegister = () => {
     console.log('Register clicked');
-    navigate('/RegisterPopup');
+    navigate('/registerpopup');
   };
 
   const handleAttendEvent = () => {//implement this

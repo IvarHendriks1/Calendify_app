@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import logo from './calender.png';
@@ -9,7 +9,7 @@ export const UserInput: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false); // State for toggling password visibility
   const [loginStatus, setLoginStatus] = useState<string | null>(null); // State for showing login status
   const navigate = useNavigate();
-
+  const [herstelCode, setHerstelCode] = useState<string>("");
   const handleLogin = async () => {
     if (!username || !password) {
       alert('Please fill in both fields.');
@@ -43,24 +43,33 @@ export const UserInput: React.FC = () => {
     }
   };
 
-  const handleCheckLoginStatus = async () => {
+  const forgotPassword = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/IsUserLoggedIn', {
+      const response = await fetch('http://localhost:5001/api/ForgotPassword', {
         method: 'GET',
         credentials: 'include', // Include cookies
       });
 
       if (response.ok) {
-        const data = await response.text();
-        setLoginStatus(`Logged in as: ${data}`);
+        const data = await response.json();
+        console.log(data);
+        setHerstelCode(data);
       } else {
-        setLoginStatus('Not logged in.');
+        alert(response.statusText);
       }
     } catch (error) {
       setLoginStatus('Error checking login status.');
       console.error('Error checking login status:', error);
     }
+
   };
+
+  useEffect(() => {
+    if (herstelCode) {
+      console.log('Updated herstelCode:', herstelCode);
+      navigate('/forgot', { state: { herstelCode } });
+    }
+  }, [herstelCode]);
 
   const togglePasswordVisibility = () => {
     setShowPassword((curState) => !curState);
@@ -106,7 +115,7 @@ export const UserInput: React.FC = () => {
         </button>
 
         <button
-          onClick={handleCheckLoginStatus}
+          onClick={forgotPassword}
           style={{
             marginTop: '10px',
             padding: '5px 10px',
@@ -116,14 +125,9 @@ export const UserInput: React.FC = () => {
             borderRadius: '5px',
           }}
         >
-          Check Login Status
+          Forgot Password
         </button>
 
-        {loginStatus && (
-          <p style={{ marginTop: '10px', fontSize: '14px', color: '#333' }}>
-            {loginStatus}
-          </p>
-        )}
       </header>
     </div>
   );
