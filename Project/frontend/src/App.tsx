@@ -6,7 +6,9 @@ import { UserInput } from './LoginPage';
 import { EventCreator } from './EvenCreator';
 import { CalendarPage } from './CalenderPage';
 import { AlterEvent } from './AlterEvent';
+import { RegisterPopup } from './ResgisterPopup';
 import { DeleteEvent } from './DeletePopup';
+
 import SearchPage from './SearchPage';
 import './Styles.css';
 
@@ -23,6 +25,7 @@ const App: React.FC = () => {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/alter" element={<AlterEvent />} />
           <Route path="/delete-event" element={<DeleteEvent />} />
+          <Route path="/RegisterPopup" element={<RegisterPopup />} />
         </Routes>
       </div>
     </Router>

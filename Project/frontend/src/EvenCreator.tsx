@@ -32,6 +32,7 @@ export const EventCreator: React.FC = () => {
       return;
     }
 
+
     if (StartTime >= EndTime) {
       alert("End time must be after start time.");
       return;
@@ -66,6 +67,7 @@ export const EventCreator: React.FC = () => {
       alert("Location is required.");
       return;
     }
+
 
     const eventData = {
       Title,
@@ -132,6 +134,8 @@ export const EventCreator: React.FC = () => {
           value={EventDate}
           onChange={(e) => setEventDate(e.target.value)}
         />
+
+        
         <label className="label">Begin Time</label>
         <input
           className="input"

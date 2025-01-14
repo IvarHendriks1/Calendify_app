@@ -50,6 +50,7 @@ export const DeleteEvent: React.FC = () => {
         console.error('Error deleting event:', errorData);
         alert("Failed to delete the event.");
       }
+
     } catch (error) {
       console.error('Network error:', error);
       alert("Failed to delete the event.");

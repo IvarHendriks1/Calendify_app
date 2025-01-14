@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import './CalenderPage.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,14 +10,16 @@ type Event = {
   date: string;
   startTime: string;
   endTime: string;
+  EventAttendances: { userId: number; userName: string }[] | null;
 };
 
 
 export const CalendarPage: React.FC = () => {
+
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
     const today = new Date();
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() + 1); 
+    startOfWeek.setDate(today.getDate() - today.getDay() + 1);
     return startOfWeek;
   });
 
@@ -29,20 +31,21 @@ export const CalendarPage: React.FC = () => {
     });
   };
 
-  
-  const weekDates = getWeekDates(currentWeekStart);
 
+  const weekDates = getWeekDates(currentWeekStart);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [events, setEvents] = useState<Event[]>([]); 
+  const [events, setEvents] = useState<Event[]>([]);
   const navigate = useNavigate();
 
-  const  getEvents = async () => {
+
+
+  const getEvents = async () => {
     try {
       const response = await fetch('http://localhost:5001/api/Events', {
         method: 'GET',
       });
 
-      
+
 
       if (response.ok) {
         console.log('Get events successful: ', response.statusText);
@@ -82,13 +85,19 @@ export const CalendarPage: React.FC = () => {
     setSelectedEvent(event);
   };
 
-  const handleCreateEvent = () => {//implement this
+  const handleCreateEvent = () => {
     console.log('Create Event clicked');
     navigate('/event');
   };
 
-  const handleDeleteEvent = () => {//implement this
-    console.log('Create Event clicked');
+  const handleDeleteEvent = () => {
+    console.log('Delete Event clicked');
+    navigate('/DeletePopup');
+  };
+
+  const handleRegister = () => {
+    console.log('Register clicked');
+    navigate('/RegisterPopup');
   };
 
   const handleAttendEvent = () => {//implement this
@@ -97,7 +106,8 @@ export const CalendarPage: React.FC = () => {
     }
   };
 
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const checkUserLoggedIn = async () => {
     try {
@@ -105,13 +115,15 @@ export const CalendarPage: React.FC = () => {
         credentials: 'include',
       });
       if (response.ok) {
-        setStatusMessage('User is logged in.');
+        setLoggedIn(true);
+        console.log('User is logged in.');
       } else {
-        setStatusMessage('User is not logged in.');
+        setLoggedIn(false);
+        console.log('User is not logged in.');
       }
     } catch (error) {
+      setLoggedIn(false);
       console.error('Error checking user login status:', error);
-      setStatusMessage('Error checking user login status.');
     }
   };
 
@@ -121,110 +133,144 @@ export const CalendarPage: React.FC = () => {
         credentials: 'include',
       });
       if (response.ok) {
-        setStatusMessage('Admin is logged in.');
+        setIsAdmin(true);
+        setLoggedIn(true);
+        console.log('Admin is logged in.');
       } else {
-        setStatusMessage('Admin is not logged in.');
+        console.log('Admin is not logged in.');
+        setIsAdmin(false);
       }
     } catch (error) {
       console.error('Error checking admin login status:', error);
-      setStatusMessage('Error checking admin login status.');
+      setIsAdmin(false)
     }
   };
 
-  const logout = async () => { //implement this
+  const logout = async () => {
     try {
       const response = await fetch('http://localhost:5001/api/Logout', {
         credentials: 'include',
       });
       if (response.ok) {
-        setStatusMessage('Logged out successfully.');
+        console.log('Logged out successfully.');
+        setLoggedIn(false);
       } else {
-        setStatusMessage('Error during logout.');
+        const response1 = await fetch('http://localhost:5001/api/AdminLogout', {
+          credentials: 'include',
+        });
+        if (response1.ok) {
+          console.log('Logged out successfully.');
+          setIsAdmin(false);
+          setLoggedIn(false);
+        } else {
+          console.log('Error during logout.');
+        }
+        navigate('/');
       }
+      navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
-      setStatusMessage('Error logging out.');
     }
   };
 
+  useEffect(() => {
+    checkAdminLoggedIn();
+    checkUserLoggedIn();
+  }, []);
+
   return (
+    <div>
+      {loggedIn || isAdmin ? <div>
+        <div className="calendar-page">
+          <header className="calendar-header">
+            <button onClick={goToPreviousWeek}>&lt;=</button>
+            <h2>
+              {weekDates[0].toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+              })}{' '}
+              -{' '}
+              {weekDates[6].toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </h2>
+            <button onClick={goToNextWeek}>=&gt;</button>
+          </header>
 
-    <div className="calendar-page">
-      <header className="calendar-header">
-        <button onClick={goToPreviousWeek}>&lt;=</button>
-        <h2>
-          {weekDates[0].toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'short',
-          })}{' '}
-          -{' '}
-          {weekDates[6].toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-          })}
-        </h2>
-        <button onClick={goToNextWeek}>=&gt;</button>
-      </header>
+          <main className="calendar-grid">
+            <div className="calendar-days">
+              {weekDates.map((date, index) => {
+                const dateStr = date.toISOString().split('T')[0];
+                const eventsForDay = events.filter((event) => event.date.split('T')[0] === dateStr);
 
-      <main className="calendar-grid">
-        <div className="calendar-days">
-          {weekDates.map((date, index) => {
-            const dateStr = date.toISOString().split('T')[0]; 
-            const eventsForDay = events.filter((event) => event.date.split('T')[0] === dateStr);
+                return (
+                  <div key={index} className="calendar-day">
+                    <h3>
+                      {date.toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        day: 'numeric',
+                      })}
+                    </h3>
+                    <div className="calendar-events">
+                      {eventsForDay.length > 0 ? (
+                        eventsForDay.map((event) => (
+                          <div
+                            key={event.id}
+                            className="calendar-event"
+                            onClick={() => handleEventSelect(event)}
+                          >
+                            {event.title} - {event.startTime.split(":")[0] + ":" + event.startTime.split(":")[1]}
+                          </div>
+                        ))
+                      ) : (
+                        <p>No events</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
-            return (
-              <div key={index} className="calendar-day">
-                <h3>
-                  {date.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    day: 'numeric',
-                  })}
-                </h3>
-                <div className="calendar-events">
-                  {eventsForDay.length > 0 ? (
-                    eventsForDay.map((event) => (
-                      <div
-                        key={event.id}
-                        className="calendar-event"
-                        onClick={() => handleEventSelect(event)}
-                      >
-                        {event.title} - {event.startTime.split(":")[0]+":"+event.startTime.split(":")[1]}
-                      </div>
-                    ))
-                  ) : (
-                    <p>No events</p>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+            <aside className="event-info">
+              {selectedEvent ? (
+                <>
+                  <h3>{selectedEvent.title}</h3>
+                  <p>
+                    Atendees: {selectedEvent.EventAttendances?.length == null ? 0 : selectedEvent.EventAttendances?.length} <br />
+                    Date: {selectedEvent.date.split("T")[0]} <br />
+                    Time: {selectedEvent.startTime.split(":")[0] + ":" + selectedEvent.startTime.split(":")[1]} - {selectedEvent.endTime.split(":")[0] + ":" + selectedEvent.endTime.split(":")[1]}<br />
+                    Description: {selectedEvent.description}
+                  </p>
+                  <button onClick={handleAttendEvent}>Attend Event</button>
+                </>
+              ) : (
+                <p>No event selected</p>
+              )}
+            </aside>
+          </main>
+
+          <footer>
+            {isAdmin ? <div>
+              <button className="create-event-button" onClick={handleCreateEvent}>
+                Create Event
+              </button>
+              <button className="delete-event-button" onClick={handleDeleteEvent}>
+                Delete Event
+              </button>
+              <button className="register-button" onClick={handleRegister}>
+                Register new user
+              </button></div> : <div></div>}
+
+            <button className="logout-button" onClick={logout}>
+              Logout
+            </button>
+
+          </footer>
         </div>
-
-        <aside className="event-info">
-          {selectedEvent ? (
-            <>
-              <h3>{selectedEvent.title}</h3>
-              <p>
-                Date: {selectedEvent.date.split("T")[0]} <br />
-                Time: {selectedEvent.startTime.split(":")[0]+":"+selectedEvent.startTime.split(":")[1]} - {selectedEvent.endTime.split(":")[0]+":"+selectedEvent.endTime.split(":")[1]}
-              </p>
-              <button onClick={handleAttendEvent}>Attend Event</button>
-            </>
-          ) : (
-            <p>No event selected</p>
-          )}
-        </aside>
-      </main>
-
-      <footer>
-        <button className="create-event-button" onClick={handleCreateEvent}>
-          Create Event
-        </button>
-        <button className="delete-event-button" onClick={handleDeleteEvent}>
-          Delete Event
-        </button>
-      </footer>
+      </div> :
+        <h1>Please log in to use the calendar.</h1>}
     </div>
   );
 };
