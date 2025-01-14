@@ -6,9 +6,8 @@ import { EventCreator } from './EvenCreator';
 import { CalenderPage } from './CalenderPage';
 import { AlterEvent } from './AlterEvent';
 import { DeletePopUp } from './DeletePopup';
-import { ChooseStyle } from './Styles';
 import SearchPage from './SearchPage';
-import './Styles.css'; // Import your global CSS styles here
+import './Styles.css';
 
 const App: React.FC = () => {
   // State to manage dark mode
@@ -36,7 +35,6 @@ const App: React.FC = () => {
   return (
     <Router>
       <div>
-        {/* Add a global dark mode toggle button */}
         <header style={{ padding: '10px', background: isDarkMode ? '#333' : '#f5f5f5', color: isDarkMode ? '#fff' : '#000' }}>
           <button onClick={toggleDarkMode}>
             Switch to {isDarkMode ? 'Light' : 'Dark'} Mode
@@ -50,7 +48,6 @@ const App: React.FC = () => {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/alter" element={<AlterEvent />} />
           <Route path="/DeletePopup" element={<DeletePopUp />} />
-          <Route path="/choose" element={<ChooseStyle />} />
         </Routes>
       </div>
     </Router>
