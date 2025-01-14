@@ -115,7 +115,12 @@ const Header: React.FC = () => {
           {isDarkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
       </div>
-      <SearchPopup isOpen={isSearchOpen} onClose={handleClosePopup} />
+      <SearchPopup
+        isOpen={isSearchOpen}
+        onClose={handleClosePopup}
+        loggedInUserId={2} // Provide the required loggedInUserId prop
+      />
+
     </header>
   );
 };
