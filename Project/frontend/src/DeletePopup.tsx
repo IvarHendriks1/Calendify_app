@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import './DeletePopup.css';
 
-const DeletePopup: React.FC<{ onDelete: () => void; onCancel: () => void }> = ({ onDelete, onCancel }) => {
+export const DeletePopup: React.FC<{ onDelete: () => void; onCancel: () => void }> = ({ onDelete, onCancel }) => {
   return (
     <div className="popup-overlay">
       <div className="popup-container">
@@ -14,42 +14,73 @@ const DeletePopup: React.FC<{ onDelete: () => void; onCancel: () => void }> = ({
   );
 };
 
-// Export the updated component with the new name
-export const DeletePopUp: React.FC = () => {
-  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
+export const DeleteEvent: React.FC = () => {
+  const [showPopup, setShowPopup] = useState(false);
+  const [eventId, setEventId] = useState(""); // State to store the event ID
   const navigate = useNavigate();
 
+  
+    useEffect(() => {
+      // Check if admin is logged in
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+      if (isAdminLoggedIn !== "true") {
+        alert("You must be logged in as an admin to access this page.");
+        navigate("/login");
+        //login bestaat niet dus moet ff later erin zetten
+      }
+    }, [navigate]);
+  
   // Function to handle the deletion action
   const handleDeleteEvent = async () => {
     try {
+      const response = await fetch(`http://localhost:5001/api/Events/${eventId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
+      if (response.ok) {
+        alert("Event has been deleted.");
+        setShowPopup(false); // Hide the popup
+        setEventId(""); // Clear the event ID
+        navigate('/menu'); // Navigate to the menu page
+      } else {
+        const errorData = await response.json();
+        console.error('Error deleting event:', errorData);
+        alert("Failed to delete the event.");
+      }
 
-      // Perform the delete operation (make an API call or modify your state)
-      console.log("Event has been deleted.");
-
-      // After deletion, close the popup and redirect to the menu
-      setShowPopup(false); // Hide the popup
-      navigate('/calender'); // Navigate to the menu page
     } catch (error) {
-      console.error('Error deleting event:', error);
+      console.error('Network error:', error);
       alert("Failed to delete the event.");
     }
   };
 
-  // Function to handle cancel action (redirect to menu without deletion)
+  // Function to handle cancel action
   const handleCancelDelete = () => {
     setShowPopup(false); // Hide the popup
-    navigate('/menu'); // Redirect to the menu page
   };
 
   // Function to show the popup
   const handleShowDeletePopup = () => {
-    setShowPopup(true); // Show the popup
+    if (!eventId.trim()) {//trim ensures that its not just whitespace
+      alert("Please enter an event ID before attempting to delete.");
+      return;
+    }
+    setShowPopup(true); 
   };
 
   return (
     <div className="container">
-      {/* Trigger button for showing the delete confirmation popup */}
+      <h1>Delete Event</h1>
+      <input
+        className="input"
+        type="text"
+        placeholder="Enter Event ID"
+        value={eventId}
+        onChange={(e) => setEventId(e.target.value)}
+      />
       <button className="trigger-button" onClick={handleShowDeletePopup}>
         Delete Event
       </button>
@@ -58,7 +89,7 @@ export const DeletePopUp: React.FC = () => {
       {showPopup && (
         <DeletePopup
           onDelete={handleDeleteEvent} // Delete item when confirmed
-          onCancel={handleCancelDelete} // Cancel deletion and go back to the menu
+          onCancel={handleCancelDelete} // Cancel deletion
         />
       )}
     </div>

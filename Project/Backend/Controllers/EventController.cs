@@ -38,7 +38,7 @@ namespace CalendifyApp.Controllers
         }
 
 
-
+        [AdminFilter]
         [HttpPost]
         public async Task<IActionResult> AddEvent([FromBody] DTOEvent eventDto)
         {

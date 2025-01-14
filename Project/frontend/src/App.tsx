@@ -1,31 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './Header'; // Import the Header component
 import { UserInput } from './LoginPage';
 import { EventCreator } from './EvenCreator';
 import { CalendarPage } from './CalenderPage';
 import { AlterEvent } from './AlterEvent';
-import { DeletePopUp } from './DeletePopup';
 import { RegisterPopup } from './ResgisterPopup';
+import { DeleteEvent } from './DeletePopup';
+
 import SearchPage from './SearchPage';
+import './Styles.css';
 
 const App: React.FC = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<UserInput />} />
-        <Route path="/calender" element={<CalendarPage />} />
-        <Route path="/event" element={<EventCreator />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/alter" element={<AlterEvent />} />
-        <Route path="/DeletePopup" element={<DeletePopUp />} />
-        <Route path="/RegisterPopup" element={<RegisterPopup />} />
-      </Routes>
+      <div>
+        <Header/>
+
+        <Routes>
+          <Route path="/" element={<UserInput />} />
+          <Route path="/calender" element={<CalendarPage />} />
+          <Route path="/event" element={<EventCreator />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/alter" element={<AlterEvent />} />
+          <Route path="/delete-event" element={<DeleteEvent />} />
+          <Route path="/RegisterPopup" element={<RegisterPopup />} />
+        </Routes>
+      </div>
     </Router>
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+// Initialize the app only once
+const container = document.getElementById('root') as HTMLElement;
+const root = ReactDOM.createRoot(container);
+
+// Use root.render() to render the app
 root.render(
   <React.StrictMode>
     <App />

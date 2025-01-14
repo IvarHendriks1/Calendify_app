@@ -39,7 +39,7 @@ Content-Type: application/json
 ####
 
 # Update Existing Event (Admin Only)
-PUT http://localhost:5001/api/Events/1
+PUT http://localhost:5001/api/Events/3
 Content-Type: application/json
 
 {
