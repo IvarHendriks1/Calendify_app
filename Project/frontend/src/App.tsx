@@ -11,38 +11,10 @@ import SearchPage from './SearchPage';
 import './Styles.css';
 
 const App: React.FC = () => {
-  // State to manage dark mode
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Retrieve the saved theme preference from localStorage
-    return localStorage.getItem('theme') === 'dark';
-    // if its not true it start as false so it starts as white
-  });
-
-  // Function to toggle dark mode
-  const toggleDarkMode = () => {
-    setIsDarkMode((prevMode) => !prevMode);
-  };
-  // prevMode is the previous value of isDarkMode.
-
-  // Apply the dark mode class to the body
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add('dark-mode');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.body.classList.remove('dark-mode');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDarkMode]);
-
   return (
     <Router>
       <div>
-        <header style={{ padding: '10px', background: isDarkMode ? '#333' : '#f5f5f5', color: isDarkMode ? '#fff' : '#000' }}>
-          <button onClick={toggleDarkMode}>
-            Switch to {isDarkMode ? 'Light' : 'Dark'} Mode
-          </button>
-        </header>
+        <Header/>
 
         <Routes>
           <Route path="/" element={<UserInput />} />
