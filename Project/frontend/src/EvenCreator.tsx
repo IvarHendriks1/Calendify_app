@@ -14,7 +14,7 @@ export const EventCreator: React.FC = () => {
 
   const handleClick = () => {
     // Navigate to '/menu' when back is clicked
-    navigate('/menu');
+    navigate('/calender');
   };
 
   const handleCreateEvent = async () => {
