@@ -5,9 +5,9 @@ import "./EventCreator.css";
 export const EventCreator: React.FC = () => {
   const [Title, setTitle] = useState("");
   const [Description, setDescription] = useState("");
-  const [EventDate, setEventDate] = useState(""); // Renamed from Date
-  const [StartTime, setStartTime] = useState("");
-  const [EndTime, setEndTime] = useState("");
+  const [EventDate, setEventDate] = useState("");
+  const [StartTime, setStartTime] = useState(""); // Format: HH:mm:ss
+  const [EndTime, setEndTime] = useState(""); // Format: HH:mm:ss
   const [Location, setLocation] = useState("");
 
   const navigate = useNavigate();
@@ -30,11 +30,11 @@ export const EventCreator: React.FC = () => {
     const eventData = {
       Title,
       Description,
-      Date: EventDate, // Use EventDate here
-      StartTime,
-      EndTime,
+      Date: EventDate,
+      StartTime: `${StartTime}:00`, // Add seconds manually
+      EndTime: `${EndTime}:00`, // Add seconds manually
       Location,
-      AdminApproval: true, // Hardcoded for simplicity
+      AdminApproval: true,
     };
 
     try {
@@ -50,7 +50,7 @@ export const EventCreator: React.FC = () => {
         alert("Event created successfully!");
         setTitle("");
         setDescription("");
-        setEventDate(""); // Clear EventDate
+        setEventDate("");
         setStartTime("");
         setEndTime("");
         setLocation("");
@@ -89,26 +89,23 @@ export const EventCreator: React.FC = () => {
           className="input"
           placeholder="Event Date"
           type="date"
-          value={EventDate} // Updated to EventDate
-          onChange={(e) => setEventDate(e.target.value)} // Updated to setEventDate
+          value={EventDate}
+          onChange={(e) => setEventDate(e.target.value)}
         />
-
-        <label className="label">Begin Time</label>
+        <label className="label">Begin Time (HH:mm:ss)</label>
         <input
           className="input"
           type="time"
           value={StartTime}
           onChange={(e) => setStartTime(e.target.value)}
         />
-
-        <label className="label">End Time</label>
+        <label className="label">End Time (HH:mm:ss)</label>
         <input
           className="input"
           type="time"
           value={EndTime}
           onChange={(e) => setEndTime(e.target.value)}
         />
-
         <input
           className="input"
           type="text"
