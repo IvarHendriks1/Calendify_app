@@ -17,10 +17,10 @@ namespace CalendifyApp.Services
             _context = context;
         }
 
-        public LoginStatus CheckPassword(string username, string inputPassword)
+        public LoginStatus CheckPassword(string email, string inputPassword)
         {
             // Check if the admin exists in the database
-            var admin = _context.Admin.SingleOrDefault(x => x.Username == username);
+            var admin = _context.Admin.SingleOrDefault(x => x.Email == email);
             if (admin != null)
             {
                 // Validate the password
@@ -54,7 +54,7 @@ namespace CalendifyApp.Services
             if (user.Password.Length < 6) return 2;
             if (!user.Email.Contains("@") || !user.Email.Contains(".")) return 1;
             user.Password = EncryptionHelper.EncryptPassword(user.Password);
-            user.Id = _context.Users.Count() +1;
+            user.Id = _context.Users.Count() + 1;
             _context.Users.Add(user);
             _context.SaveChanges();
             return 0;
