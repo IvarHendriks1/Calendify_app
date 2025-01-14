@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'; 
 import './CalenderPage.css';
+import { useNavigate } from 'react-router-dom';
 
 
 type Event = {
@@ -33,7 +34,7 @@ export const CalendarPage: React.FC = () => {
 
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [events, setEvents] = useState<Event[]>([]); 
-
+  const navigate = useNavigate();
 
   const  getEvents = async () => {
     try {
@@ -81,15 +82,16 @@ export const CalendarPage: React.FC = () => {
     setSelectedEvent(event);
   };
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = () => {//implement this
+    console.log('Create Event clicked');
+    navigate('/event');
+  };
+
+  const handleDeleteEvent = () => {//implement this
     console.log('Create Event clicked');
   };
 
-  const handleDeleteEvent = () => {
-    console.log('Create Event clicked');
-  };
-
-  const handleAttendEvent = () => {
+  const handleAttendEvent = () => {//implement this
     if (selectedEvent) {
       console.log(`Attending event: ${selectedEvent.title}`);
     }
@@ -129,7 +131,7 @@ export const CalendarPage: React.FC = () => {
     }
   };
 
-  const logout = async () => {
+  const logout = async () => { //implement this
     try {
       const response = await fetch('http://localhost:5001/api/Logout', {
         credentials: 'include',
