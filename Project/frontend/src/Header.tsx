@@ -5,23 +5,33 @@ const Header: React.FC = () => {
   const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if admin is logged in
-    fetch('/api/IsAdminLoggedIn')
-      .then((response) => {
-        if (response.ok) {
+    const checkRole = async () => {
+      try {
+        // Add a unique timestamp to bypass caching for admin check
+        const adminResponse = await fetch(`/api/IsAdminLoggedIn?ts=${Date.now()}`, { credentials: 'include' });
+        if (adminResponse.ok) {
           setRole('admin');
+          return;
         }
-      })
-      .catch(() => {
-        // Check if user is logged in if admin check fails
-        fetch('/api/IsUserLoggedIn')
-          .then((response) => {
-            if (response.ok) {
-              setRole('user');
-            }
-          })
-          .catch(() => setRole(null)); // Not logged in
-      });
+      } catch (error) {
+        console.error('Error checking admin login:', error);
+      }
+
+      try {
+        // Add a unique timestamp to bypass caching for user check
+        const userResponse = await fetch(`/api/IsUserLoggedIn?ts=${Date.now()}`, { credentials: 'include' });
+        if (userResponse.ok) {
+          setRole('user');
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking user login:', error);
+      }
+
+      setRole(null); // Not logged in
+    };
+
+    checkRole();
   }, []);
 
   return (
