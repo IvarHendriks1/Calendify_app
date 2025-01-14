@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Ensure this is correctly imported
 
 interface Event {
   id: number;
@@ -26,6 +27,26 @@ const SearchPage: React.FC = () => {
   const [loggedInUserId] = useState<number>(2); // Mock logged-in user ID for testing
   const [attendedEvents, setAttendedEvents] = useState<number[]>([]);
 
+  const navigate = useNavigate(); // Ensure this hook is used
+
+  // // Check if user is logged in
+  // useEffect(() => {
+  //   const checkUserLoggedIn = async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:5001/api/IsUserLoggedIn', {
+  //         credentials: 'include',
+  //       });
+  //       if (response.status !== 200) {
+  //         navigate('/'); // Redirect to login page if not logged in
+  //       }
+  //     } catch (error) {
+  //       console.error('Error checking user login status:', error);
+  //       navigate('/'); // Redirect to login on error
+  //     }
+  //   };
+
+  //   checkUserLoggedIn();
+  // }, [navigate]);
   useEffect(() => {
     const fetchEvents = async () => {
       try {
