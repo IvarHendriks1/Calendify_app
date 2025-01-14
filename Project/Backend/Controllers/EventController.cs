@@ -59,14 +59,22 @@ namespace CalendifyApp.Controllers
 
         [AdminFilter]
         [HttpPut("{id}")]
-        public IActionResult UpdateEvent(int id, [FromBody] Event updatedEvent)
+        public IActionResult UpdateEvent(int id, [FromBody] UpdateEventDTO updatedEvent)
         {
-            var result = _eventService.UpdateEvent(id, updatedEvent);
-            if (result)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existingEvent = _eventService.GetEventById(id);
+            if (existingEvent == null)
+                return NotFound($"Event with ID {id} not found.");
+
+            var success = _eventService.UpdateEvent(id, updatedEvent);
+            if (success)
                 return Ok($"Event with ID {id} updated successfully.");
-            
-            return NotFound($"Event with ID {id} not found.");
+
+            return BadRequest("Failed to update the event.");
         }
+
 
         [AdminFilter]
         [HttpDelete("{id}")]
