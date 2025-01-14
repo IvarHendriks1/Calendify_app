@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace CalendifyApp.Services
 {
-    public enum LoginStatus { IncorrectPassword, IncorrectUsername, Success }
+    public enum LoginStatus { IncorrectPassword, IncorrectUsernameOrEmail, Success }
 
     public enum ADMIN_SESSION_KEY { adminLoggedIn }
 
@@ -31,24 +31,23 @@ namespace CalendifyApp.Services
                 return LoginStatus.IncorrectPassword;
             }
 
-            return LoginStatus.IncorrectUsername;
+            return LoginStatus.IncorrectUsernameOrEmail;
         }
 
-        public LoginStatus CheckUserPassword(string username, string inputPassword)
+        public LoginStatus CheckUserPassword(string email, string inputPassword)
         {
-            // Check if the user exists in the database
-            var user = _context.Users.SingleOrDefault(x => x.FirstName == username);
+            var user = _context.Users.SingleOrDefault(x => x.Email == email); // Match email
             if (user != null)
             {
-                // Validate the password
-                if (user.Password == EncryptionHelper.EncryptPassword(inputPassword))
+                if (user.Password == inputPassword) // Compare plain text
                 {
                     return LoginStatus.Success;
                 }
                 return LoginStatus.IncorrectPassword;
             }
-
-            return LoginStatus.IncorrectUsername;
+            return LoginStatus.IncorrectUsernameOrEmail;
         }
+
+
     }
 }
