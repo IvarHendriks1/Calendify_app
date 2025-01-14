@@ -58,6 +58,14 @@ GET http://localhost:5001/api/IsUserLoggedIn
 ###################
 GET http://localhost:5001/api/ForgotPassword
 ########################
+PUT http://localhost:5001/api/Password
+Content-Type: application/json
+
+{
+  "email": "joostderijcke76@gmail.com",
+  "password": "datmagjenietweten"
+}
+########################
 #logout User
 GET http://localhost:5001/api/Logout
 ###################

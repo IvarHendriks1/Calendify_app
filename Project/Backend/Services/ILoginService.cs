@@ -10,4 +10,5 @@ public interface ILoginService
 
     public int Register(User user);
     public int ForgotPassword();
+    public bool Password(string email, string password);
 }

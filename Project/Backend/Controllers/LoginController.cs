@@ -103,6 +103,13 @@ public class LoginController : Controller
     }
 
 
+    [HttpPut("Password")]
+    public IActionResult Password([FromBody] string email, [FromBody] string password)
+    {
+        if (_loginService.Password(email, password)) return Ok();
+        return BadRequest();
+    }
+
     [AuthorizationFilter]
     [HttpGet("Logout")]
     public IActionResult Logout()
