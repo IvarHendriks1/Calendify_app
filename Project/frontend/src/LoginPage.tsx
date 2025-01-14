@@ -29,17 +29,18 @@ export const UserInput: React.FC = () => {
         body: JSON.stringify(data),
       });
 
-      const responseData = await response.json();
+      
 
       if (response.ok) {
-        console.log('Login successful: ', responseData);
-        navigate('/calendar', { state: { username } });
+        console.log('Login successful: ', response);
+        navigate('/calender', { state: { username } });
       } else {
-        alert(responseData.message || 'Login failed. Please check your credentials.');
+        alert(response.statusText);
       }
 
     } catch (error) {
       alert("Er is iets misgegaan");
+      console.error('Error fetching events:', error);
     }
 
   };
