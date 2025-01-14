@@ -18,10 +18,7 @@ const Header: React.FC = () => {
   };
 
   const toggleDarkMode = () => {
-    setIsDarkMode((prevMode) => {
-      console.log('Dark mode toggled:', !prevMode);
-      return !prevMode;
-    });
+    setIsDarkMode((prevMode) => !prevMode);
   };
 
   useEffect(() => {
@@ -77,21 +74,9 @@ const Header: React.FC = () => {
     >
       {/* Left Section */}
       <div style={{ display: 'flex', gap: '15px', flex: '1' }}>
-        {role === 'admin' ? (
-          <>
-            <Link to="/" style={{ textDecoration: 'none', color: isDarkMode ? '#fff' : 'black' }}>Calendar</Link>
-            <Link to="/add-event" style={{ textDecoration: 'none', color: isDarkMode ? '#fff' : 'black' }}>Add Event</Link>
-            <Link to="/all-users" style={{ textDecoration: 'none', color: isDarkMode ? '#fff' : 'black' }}>All Users</Link>
-          </>
-        ) : role === 'user' ? (
-          <>
-            <Link to="/" style={{ textDecoration: 'none', color: isDarkMode ? '#fff' : 'black' }}>My Schedule</Link>
-            <Link to="/tasks" style={{ textDecoration: 'none', color: isDarkMode ? '#fff' : 'black' }}>Tasks</Link>
-            <Link to="/notifications" style={{ textDecoration: 'none', color: isDarkMode ? '#fff' : 'black' }}>Notifications</Link>
-          </>
-        ) : (
-          <span style={{ color: 'red' }}>Not logged in</span>
-        )}
+        <Link to="/" style={{ textDecoration: 'none', color: isDarkMode ? '#fff' : 'black' }}>
+          Calendar
+        </Link>
       </div>
 
       {/* Middle Section */}
@@ -130,7 +115,12 @@ const Header: React.FC = () => {
           {isDarkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
       </div>
-      <SearchPopup isOpen={isSearchOpen} onClose={handleClosePopup} />
+      <SearchPopup
+        isOpen={isSearchOpen}
+        onClose={handleClosePopup}
+        loggedInUserId={2} // Provide the required loggedInUserId prop
+      />
+
     </header>
   );
 };

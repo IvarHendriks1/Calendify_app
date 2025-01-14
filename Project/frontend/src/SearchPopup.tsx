@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface Event {
   id: number;
@@ -13,12 +13,24 @@ interface Event {
 interface SearchPopupProps {
   isOpen: boolean;
   onClose: () => void;
+  loggedInUserId: number;
 }
 
-const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose }) => {
+interface Attendee {
+  userId: number;
+  userName: string;
+}
+
+const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUserId }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [attendees, setAttendees] = useState<Attendee[]>([]);
+  const [popupEvent, setPopupEvent] = useState<Event | null>(null);
+  const [noAttendeesPopup, setNoAttendeesPopup] = useState<string | null>(null);
+  const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
+  const [attendedEvents, setAttendedEvents] = useState<number[]>([]);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -35,10 +47,25 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose }) => {
       }
     };
 
-    if (isOpen) {
-      fetchEvents(); // Fetch events only when the popup is open
-    }
-  }, [isOpen]);
+    const fetchAttendedEvents = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/api/EventAttendance/user/${loggedInUserId}/attended-events`
+        );
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data: Event[] = await response.json();
+        const attendedEventIds = data.map((event) => event.id);
+        setAttendedEvents(attendedEventIds);
+      } catch (error) {
+        console.error('Error fetching attended events:', error);
+      }
+    };
+
+    fetchEvents();
+    fetchAttendedEvents();
+  }, [loggedInUserId]);
 
   useEffect(() => {
     const filtered = events.filter((event) =>
@@ -51,12 +78,91 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose }) => {
     setSearchQuery(e.target.value);
   };
 
-  if (!isOpen) return null; // Render nothing if the popup is not open
+  const handleClickOutside = (event: MouseEvent) => {
+    if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const handleViewAttendees = async (event: Event) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/EventAttendance/attendees/${event.id}`
+      );
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      const data: Attendee[] = await response.json();
+      if (data.length === 0) {
+        setNoAttendeesPopup(`No attendees for "${event.title}" yet.`);
+      } else {
+        setAttendees(data);
+        setPopupEvent(event);
+      }
+    } catch (error) {
+      console.error('Error fetching attendees:', error);
+    }
+  };
+
+  const handleAttendEvent = async (event: Event) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/EventAttendance/attend', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: loggedInUserId, eventId: event.id }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      setAttendedEvents([...attendedEvents, event.id]);
+      setConfirmationMessage(`You have successfully attended "${event.title}".`);
+    } catch (error) {
+      console.error('Error attending event:', error);
+    }
+  };
+
+  const handleLeaveEvent = async (event: Event) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/EventAttendance/remove', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: loggedInUserId, eventId: event.id }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      setAttendedEvents(attendedEvents.filter((id) => id !== event.id));
+      setConfirmationMessage(`You have successfully left "${event.title}".`);
+    } catch (error) {
+      console.error('Error leaving event:', error);
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div style={styles.overlay}>
-      <div style={styles.popup}>
+      <div style={styles.popup} ref={popupRef}>
         <h1 style={styles.header}>Search Events</h1>
+        <button style={styles.closeButton} onClick={onClose}>
+          Close
+        </button>
         <input
           type="text"
           placeholder="Search for events"
@@ -75,15 +181,33 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose }) => {
                   {event.startTime} - {event.endTime}
                 </p>
                 <p>Location: {event.location}</p>
+                <button
+                  style={styles.button}
+                  onClick={() => handleViewAttendees(event)}
+                >
+                  View Attendees
+                </button>
+                {attendedEvents.includes(event.id) ? (
+                  <button
+                    style={{ ...styles.button, backgroundColor: 'red' }}
+                    onClick={() => handleLeaveEvent(event)}
+                  >
+                    Leave Event
+                  </button>
+                ) : (
+                  <button
+                    style={{ ...styles.button, backgroundColor: 'green' }}
+                    onClick={() => handleAttendEvent(event)}
+                  >
+                    Attend Event
+                  </button>
+                )}
               </div>
             ))
           ) : (
             <p>No events found.</p>
           )}
         </div>
-        <button style={styles.closeButton} onClick={onClose}>
-          Close
-        </button>
       </div>
     </div>
   );
@@ -110,6 +234,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     maxWidth: '600px',
     maxHeight: '80%',
     overflowY: 'auto',
+    position: 'relative',
   },
   header: {
     margin: '0 0 16px 0',
@@ -132,10 +257,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderBottom: '1px solid #ddd',
     padding: '10px 0',
   },
+  button: {
+    margin: '5px',
+    padding: '10px 15px',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+  },
   closeButton: {
-    marginTop: '16px',
-    padding: '10px 20px',
-    backgroundColor: '#007BFF',
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    padding: '5px 10px',
+    backgroundColor: 'red',
     color: '#fff',
     border: 'none',
     borderRadius: '4px',
