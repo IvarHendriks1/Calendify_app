@@ -33,7 +33,7 @@ export const UserInput: React.FC = () => {
 
       if (response.ok) {
         console.log('Login successful: ', response);
-        navigate('/calender', { state: { username } }); // Commented navigation
+        navigate('/calender', { state: { username } }); 
       } else {
         alert(response.statusText);
       }

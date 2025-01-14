@@ -10,6 +10,7 @@ type Event = {
   date: string;
   startTime: string;
   endTime: string;
+  EventAttendances: { userId: number; userName: string }[] | null;
 };
 
 
@@ -206,8 +207,10 @@ export const CalendarPage: React.FC = () => {
             <>
               <h3>{selectedEvent.title}</h3>
               <p>
+                Atendees: {selectedEvent.EventAttendances?.length == null? 0:selectedEvent.EventAttendances?.length } <br/>
                 Date: {selectedEvent.date.split("T")[0]} <br />
-                Time: {selectedEvent.startTime.split(":")[0]+":"+selectedEvent.startTime.split(":")[1]} - {selectedEvent.endTime.split(":")[0]+":"+selectedEvent.endTime.split(":")[1]}
+                Time: {selectedEvent.startTime.split(":")[0]+":"+selectedEvent.startTime.split(":")[1]} - {selectedEvent.endTime.split(":")[0]+":"+selectedEvent.endTime.split(":")[1]}<br/>
+                Description: {selectedEvent.description}
               </p>
               <button onClick={handleAttendEvent}>Attend Event</button>
             </>
