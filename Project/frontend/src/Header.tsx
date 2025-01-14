@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import SearchPopup from './SearchPopup';
 
 const Header: React.FC = () => {
   const [role, setRole] = useState<string | null>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const handleSearchClick = () => {
+    setIsSearchOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsSearchOpen(false);
+  };
 
   useEffect(() => {
     const checkRole = async () => {
@@ -72,6 +82,7 @@ const Header: React.FC = () => {
       {/* Right Section */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', flex: '1' }}>
         <button
+          onClick={handleSearchClick}
           style={{
             padding: '10px 30px',
             fontSize: '16px',
@@ -85,6 +96,7 @@ const Header: React.FC = () => {
           Search
         </button>
       </div>
+      <SearchPopup isOpen={isSearchOpen} onClose={handleClosePopup} />
     </header>
   );
 };

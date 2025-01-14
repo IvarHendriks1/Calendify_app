@@ -7,7 +7,6 @@ import { EventCreator } from './EvenCreator';
 import { CalendarPage } from './CalenderPage';
 import { AlterEvent } from './AlterEvent';
 import { DeletePopUp } from './DeletePopup';
-import SearchPage from './SearchPage';
 
 const App: React.FC = () => {
   return (
@@ -17,7 +16,6 @@ const App: React.FC = () => {
         <Route path="/" element={<UserInput />} />
         <Route path="/calender" element={<CalendarPage />} />
         <Route path="/event" element={<EventCreator />} />
-        <Route path="/search" element={<SearchPage />} />
         <Route path="/alter" element={<AlterEvent />} />
         <Route path="/DeletePopup" element={<DeletePopUp />} />
       </Routes>
