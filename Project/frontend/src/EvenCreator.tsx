@@ -17,8 +17,7 @@ export const EventCreator: React.FC = () => {
     const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
       if (isAdminLoggedIn !== "true") {
         alert("You must be logged in as an admin to access this page.");
-        navigate("/login");
-        //login bestaat niet dus moet ff later erin zetten
+        navigate("/");
       }
     }, [navigate]);
   const handleClick = () => {
