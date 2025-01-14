@@ -88,7 +88,8 @@ export const CalendarPage: React.FC = () => {
   };
 
   const handleDeleteEvent = () => {//implement this
-    console.log('Create Event clicked');
+    console.log('Delete Event clicked');
+    navigate('/delete-event');
   };
 
   const handleAttendEvent = () => {//implement this
