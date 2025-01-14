@@ -82,12 +82,12 @@ namespace CalendifyApp.Services
             return eventToAdd; // Return the saved event
         }
 
-        public bool UpdateEvent(int id, Event updatedEvent)
+        public bool UpdateEvent(int id, UpdateEventDTO updatedEvent)
         {
             var existingEvent = _context.Events.FirstOrDefault(e => e.Id == id);
             if (existingEvent == null) return false;
 
-            existingEvent.Id = updatedEvent.Id;
+            // Update fields
             existingEvent.Title = updatedEvent.Title;
             existingEvent.Description = updatedEvent.Description;
             existingEvent.Date = updatedEvent.Date;
@@ -99,6 +99,7 @@ namespace CalendifyApp.Services
             _context.SaveChanges();
             return true;
         }
+
 
         public bool DeleteEvent(int id)
         {

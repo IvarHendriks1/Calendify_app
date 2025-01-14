@@ -88,12 +88,14 @@ public class LoginController : Controller
     [HttpGet("IsUserLoggedIn")]
     public IActionResult IsUserLoggedIn()
     {
-        if (HttpContext.Session.GetString("UserLoggedIn") is null)
+        var user = HttpContext.Session.GetString("UserLoggedIn");
+        if (string.IsNullOrEmpty(user))
         {
-            return Unauthorized("You are not logged in as user.");
+            return Unauthorized("You are not logged in.");
         }
-        return Ok($"{HttpContext.Session.GetString("UserLoggedIn")}");
+        return Ok($"Logged in as {user}");
     }
+
 
     [AuthorizationFilter]
     [HttpGet("Logout")]
