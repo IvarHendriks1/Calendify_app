@@ -10,17 +10,38 @@ export const AlterEvent: React.FC = () => {
   const [StartTime, setStartTime] = useState(""); // Format: HH:mm:ss
   const [EndTime, setEndTime] = useState(""); // Format: HH:mm:ss
   const [Location, setLocation] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Check if admin is logged in
-    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
-    if (isAdminLoggedIn !== "true") {
-      alert("You must be logged in as an admin to access this page.");
+  const checkAdminLoggedIn = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/IsAdminLoggedIn", {
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.isAdmin) {
+          setIsAdmin(true);
+        } else {
+          alert("You must be logged in as an admin to access this page.");
+          navigate("/");
+        }
+      } else {
+        alert("Failed to verify admin status. Redirecting to home page.");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error checking admin login status:", error);
+      alert("An error occurred. Redirecting to home page.");
       navigate("/");
     }
-  }, [navigate]);
+  };
+
+  useEffect(() => {
+    checkAdminLoggedIn();
+  }, []);
 
   const handleClick = () => {
     navigate("/menu");
@@ -32,7 +53,6 @@ export const AlterEvent: React.FC = () => {
       return;
     }
 
-    // Ensure the Title field is not empty or just whitespace.
     if (!Title.trim()) {
       alert("Title is required.");
       return;
@@ -77,8 +97,8 @@ export const AlterEvent: React.FC = () => {
       Title,
       Description,
       Date: EventDate,
-      StartTime: `${StartTime}:00`, // Add seconds manually
-      EndTime: `${EndTime}:00`, // Add seconds manually
+      StartTime: `${StartTime}:00`,
+      EndTime: `${EndTime}:00`,
       Location,
       AdminApproval: true,
     };
@@ -93,7 +113,7 @@ export const AlterEvent: React.FC = () => {
       });
 
       if (response.ok) {
-        alert("Event Altered successfully!");
+        alert("Event altered successfully!");
         setId("");
         setTitle("");
         setDescription("");
