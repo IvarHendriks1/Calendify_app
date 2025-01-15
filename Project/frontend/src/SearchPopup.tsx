@@ -23,7 +23,7 @@ interface Attendee {
   attendedAt: string;
 }
 
-type FilterType = 'maxAttendees' | 'dateRange' | 'location' | 'keyword';
+type FilterType = 'dateRange' | 'location' | 'keyword';
 
 interface Filter {
   type: FilterType;
@@ -34,7 +34,7 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState<Filter[]>([]);
-  const [newFilterType, setNewFilterType] = useState<FilterType>('maxAttendees');
+  const [newFilterType, setNewFilterType] = useState<FilterType>('dateRange');
   const [newFilterValue, setNewFilterValue] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [attendees, setAttendees] = useState<Attendee[]>([]);
@@ -43,6 +43,7 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
   const [attendedEvents, setAttendedEvents] = useState<number[]>([]);
   const [accordionOpen, setAccordionOpen] = useState<boolean>(false);
   const popupRef = useRef<HTMLDivElement>(null);
+  const [viewAttendeesPopupOpen, setViewAttendeesPopupOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -83,9 +84,6 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
     let filtered = [...events];
 
     filters.forEach((filter) => {
-      if (filter.type === 'maxAttendees') {
-        filtered = filtered.filter((event) => event.attendees <= Number(filter.value));
-      }
       if (filter.type === 'dateRange') {
         const [startDate, endDate] = filter.value.split(' to ').map((d: string) => new Date(d));
         filtered = filtered.filter((event) => {
@@ -135,10 +133,12 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
       const data: Attendee[] = await response.json();
       setAttendees(data);
       setPopupEvent(event);
+      setViewAttendeesPopupOpen(true); // Open the popup
     } catch (error) {
       console.error('Error fetching attendees:', error);
     }
   };
+  
 
   const handleAttendEvent = async (event: Event) => {
     try {
@@ -174,6 +174,9 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
     }
   };
 
+  const closeConfirmationPopup = () => setConfirmationMessage(null);
+  const closeViewAttendeesPopup = () => setViewAttendeesPopupOpen(false);
+
   const handleClickOutside = (event: MouseEvent) => {
     if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
       onClose();
@@ -201,6 +204,39 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
           Close
         </button>
 
+        {/* Confirmation Popup */}
+        {confirmationMessage && (
+          <div style={styles.confirmationPopup}>
+            <p>{confirmationMessage}</p>
+            <button style={styles.closeButton} onClick={closeConfirmationPopup}>
+              OK
+            </button>
+          </div>
+        )}
+
+        {/* View Attendees Popup */}
+        {viewAttendeesPopupOpen && popupEvent && (
+          <div style={styles.attendeesPopup}>
+            <h2>Attendees for {popupEvent.title}</h2>
+            {attendees.length > 0 ? (
+              <ul>
+                {attendees.map((attendee) => (
+                  <li key={attendee.userId}>
+                    {attendee.userName} (Attended at: {new Date(attendee.attendedAt).toLocaleString()})
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No attendees in this event yet.</p>
+            )}
+            <button style={styles.closeButton} onClick={closeViewAttendeesPopup}>
+              Close
+            </button>
+          </div>
+        )}
+
+
+        
         {/* Accordion Section */}
         <div>
           <div
@@ -227,7 +263,6 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
                   onChange={(e) => setNewFilterType(e.target.value as FilterType)}
                   style={styles.filterSelect}
                 >
-                  <option value="maxAttendees">Max Attendees</option>
                   <option value="dateRange">Date Range (YYYY-MM-DD to YYYY-MM-DD)</option>
                   <option value="location">Location</option>
                   <option value="keyword">Keyword</option>
@@ -269,7 +304,7 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
                 </p>
                 <p>Location: {event.location}</p>
                 <button
-                  style={styles.button}
+                  style={styles.buttonAttendees}
                   onClick={() => handleViewAttendees(event)}
                 >
                   View Attendees
@@ -312,6 +347,33 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
+  },
+  confirmationPopup: {
+    position: 'fixed',
+    top: '30%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    zIndex: 1100,
+    textAlign: 'center',
+  },
+  attendeesPopup: {
+    position: 'fixed',
+    top: '30%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    zIndex: 1100,
+    textAlign: 'center',
+    width: '400px',
+    maxHeight: '300px',
+    overflowY: 'auto',
   },
   searchBar: {
     width: '100%',
@@ -401,6 +463,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
+  },
+  buttonAttendees: {
+    margin: '5px',
+    padding: '10px 15px',
+    color: '#000',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    backgroundColor: '#ededed',
   },
 };
 

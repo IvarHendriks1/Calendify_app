@@ -47,7 +47,10 @@ namespace CalendifyApp.Services
         {
             var eventEntity = _context.Events.FirstOrDefault(e => e.Id == eventId);
             if (eventEntity == null)
-                throw new ArgumentException("Event not found.");
+            {
+                // Return an empty list if the event does not exist
+                return Enumerable.Empty<object>();
+            }
 
             var attendees = _context.EventAttendances
                 .Where(ea => ea.EventId == eventId)
@@ -60,11 +63,10 @@ namespace CalendifyApp.Services
                 })
                 .ToList();
 
-            if (!attendees.Any())
-                throw new ArgumentException("No attendees found for this event.");
-
+            // Return the list, even if it is empty
             return attendees;
         }
+
 
         public IEnumerable<object> GetEventsByUser(int userId)
         {
