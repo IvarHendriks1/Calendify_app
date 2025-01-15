@@ -42,17 +42,20 @@ namespace CalendifyApp.Controllers
             try
             {
                 var attendees = _eventAttendanceService.GetEventAttendees(eventId);
+
+                if (!attendees.Any())
+                {
+                    return Ok(new { Message = "No attendees found for this event.", Attendees = attendees });
+                }
+
                 return Ok(attendees);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { Error = "An unexpected error occurred.", Details = ex.Message });
             }
         }
+
 
         [HttpGet("user/{userId}/attended-events")]
         public IActionResult GetEventsByUser(int userId)
