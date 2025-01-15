@@ -8,6 +8,7 @@ interface Event {
   startTime: string;
   endTime: string;
   location: string;
+  attendees: number;
 }
 
 interface SearchPopupProps {
@@ -19,26 +20,35 @@ interface SearchPopupProps {
 interface Attendee {
   userId: number;
   userName: string;
+  attendedAt: string;
+}
+
+type FilterType = 'maxAttendees' | 'dateRange' | 'location' | 'keyword';
+
+interface Filter {
+  type: FilterType;
+  value: any;
 }
 
 const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUserId }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [newFilterType, setNewFilterType] = useState<FilterType>('maxAttendees');
+  const [newFilterValue, setNewFilterValue] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [popupEvent, setPopupEvent] = useState<Event | null>(null);
-  const [noAttendeesPopup, setNoAttendeesPopup] = useState<string | null>(null);
   const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
   const [attendedEvents, setAttendedEvents] = useState<number[]>([]);
+  const [accordionOpen, setAccordionOpen] = useState<boolean>(false);
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const response = await fetch('http://localhost:5001/api/Events');
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
         const data: Event[] = await response.json();
         setEvents(data);
         setFilteredEvents(data);
@@ -52,9 +62,7 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
         const response = await fetch(
           `http://localhost:5001/api/EventAttendance/user/${loggedInUserId}/attended-events`
         );
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
         const data: Event[] = await response.json();
         const attendedEventIds = data.map((event) => event.id);
         setAttendedEvents(attendedEventIds);
@@ -68,49 +76,65 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
   }, [loggedInUserId]);
 
   useEffect(() => {
-    const filtered = events.filter((event) =>
-      event.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    applyFilters();
+  }, [filters, searchQuery]);
+
+  const applyFilters = () => {
+    let filtered = [...events];
+
+    filters.forEach((filter) => {
+      if (filter.type === 'maxAttendees') {
+        filtered = filtered.filter((event) => event.attendees <= Number(filter.value));
+      }
+      if (filter.type === 'dateRange') {
+        const [startDate, endDate] = filter.value.split(' to ').map((d: string) => new Date(d));
+        filtered = filtered.filter((event) => {
+          const eventDate = new Date(event.date);
+          return eventDate >= startDate && eventDate <= endDate;
+        });
+      }
+      if (filter.type === 'location') {
+        filtered = filtered.filter((event) =>
+          event.location.toLowerCase().includes(filter.value.toLowerCase())
+        );
+      }
+      if (filter.type === 'keyword') {
+        filtered = filtered.filter((event) =>
+          event.title.toLowerCase().includes(filter.value.toLowerCase())
+        );
+      }
+    });
+
+    if (searchQuery) {
+      filtered = filtered.filter((event) =>
+        event.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
     setFilteredEvents(filtered);
-  }, [searchQuery, events]);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
-      onClose();
-    }
+  const handleAddFilter = () => {
+    if (!newFilterValue) return;
+    setFilters([...filters, { type: newFilterType, value: newFilterValue }]);
+    setNewFilterValue('');
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
+  const handleRemoveFilter = (index: number) => {
+    const updatedFilters = [...filters];
+    updatedFilters.splice(index, 1);
+    setFilters(updatedFilters);
+  };
 
   const handleViewAttendees = async (event: Event) => {
     try {
       const response = await fetch(
         `http://localhost:5001/api/EventAttendance/attendees/${event.id}`
       );
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Error: ${response.status}`);
       const data: Attendee[] = await response.json();
-      if (data.length === 0) {
-        setNoAttendeesPopup(`No attendees for "${event.title}" yet.`);
-      } else {
-        setAttendees(data);
-        setPopupEvent(event);
-      }
+      setAttendees(data);
+      setPopupEvent(event);
     } catch (error) {
       console.error('Error fetching attendees:', error);
     }
@@ -125,9 +149,7 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
         },
         body: JSON.stringify({ userId: loggedInUserId, eventId: event.id }),
       });
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Error: ${response.status}`);
       setAttendedEvents([...attendedEvents, event.id]);
       setConfirmationMessage(`You have successfully attended "${event.title}".`);
     } catch (error) {
@@ -144,15 +166,30 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
         },
         body: JSON.stringify({ userId: loggedInUserId, eventId: event.id }),
       });
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Error: ${response.status}`);
       setAttendedEvents(attendedEvents.filter((id) => id !== event.id));
       setConfirmationMessage(`You have successfully left "${event.title}".`);
     } catch (error) {
       console.error('Error leaving event:', error);
     }
   };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -163,13 +200,63 @@ const SearchPopup: React.FC<SearchPopupProps> = ({ isOpen, onClose, loggedInUser
         <button style={styles.closeButton} onClick={onClose}>
           Close
         </button>
+
+        {/* Accordion Section */}
+        <div>
+          <div
+            style={styles.accordionHeader}
+            onClick={() => setAccordionOpen(!accordionOpen)}
+          >
+            <h3>Filters</h3>
+            <span>{accordionOpen ? '-' : '+'}</span>
+          </div>
+          {accordionOpen && (
+            <div style={styles.filtersSection}>
+              <h4>Active Filters</h4>
+              {filters.map((filter, index) => (
+                <div key={index} style={styles.filterItem}>
+                  <span>
+                    {filter.type}: {JSON.stringify(filter.value)}
+                  </span>
+                  <button onClick={() => handleRemoveFilter(index)}>Remove</button>
+                </div>
+              ))}
+              <div style={styles.addFilter}>
+                <select
+                  value={newFilterType}
+                  onChange={(e) => setNewFilterType(e.target.value as FilterType)}
+                  style={styles.filterSelect}
+                >
+                  <option value="maxAttendees">Max Attendees</option>
+                  <option value="dateRange">Date Range (YYYY-MM-DD to YYYY-MM-DD)</option>
+                  <option value="location">Location</option>
+                  <option value="keyword">Keyword</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="Enter filter value"
+                  value={newFilterValue}
+                  onChange={(e) => setNewFilterValue(e.target.value)}
+                  style={styles.filterInput}
+                />
+                <button onClick={handleAddFilter} style={styles.addFilterButton}>
+                  Add
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Search Bar */}
         <input
           type="text"
-          placeholder="Search for events"
+          placeholder="Search events by title..."
           value={searchQuery}
-          onChange={handleSearch}
-          style={styles.searchInput}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={styles.searchBar}
         />
+
+        {/* Event List */}
         <div style={styles.eventList}>
           {filteredEvents.length > 0 ? (
             filteredEvents.map((event) => (
@@ -226,28 +313,78 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: 'center',
     zIndex: 1000,
   },
+  searchBar: {
+    width: '100%',
+    padding: '10px',
+    marginTop: '16px',
+    fontSize: '16px',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+  },
   popup: {
     backgroundColor: '#fff',
     padding: '20px',
     borderRadius: '8px',
     width: '80%',
-    maxWidth: '600px',
-    maxHeight: '80%',
+    maxWidth: '800px',
+    maxHeight: '90%',
     overflowY: 'auto',
     position: 'relative',
   },
   header: {
-    margin: '0 0 16px 0',
     fontSize: '24px',
-    textAlign: 'center',
-  },
-  searchInput: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '16px',
     marginBottom: '16px',
-    border: '1px solid #ccc',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    padding: '5px 10px',
+    backgroundColor: 'red',
+    color: '#fff',
+    border: 'none',
     borderRadius: '4px',
+    cursor: 'pointer',
+  },
+  accordionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#f1f1f1',
+    padding: '10px',
+    cursor: 'pointer',
+    borderRadius: '4px',
+    marginBottom: '8px',
+  },
+  filtersSection: {
+    padding: '10px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '8px',
+  },
+  filterItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '8px',
+  },
+  addFilter: {
+    marginTop: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  filterSelect: {
+    marginBottom: '8px',
+  },
+  filterInput: {
+    marginBottom: '8px',
+  },
+  addFilterButton: {
+    padding: '5px 10px',
+    backgroundColor: '#007BFF',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
   },
   eventList: {
     maxHeight: '400px',
@@ -260,17 +397,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   button: {
     margin: '5px',
     padding: '10px 15px',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: '10px',
-    right: '10px',
-    padding: '5px 10px',
-    backgroundColor: 'red',
     color: '#fff',
     border: 'none',
     borderRadius: '4px',
