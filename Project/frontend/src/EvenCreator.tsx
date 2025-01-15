@@ -9,21 +9,42 @@ export const EventCreator: React.FC = () => {
   const [StartTime, setStartTime] = useState(""); // Format: HH:mm:ss
   const [EndTime, setEndTime] = useState(""); // Format: HH:mm:ss
   const [Location, setLocation] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-      // Check if admin is logged in
-    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
-      if (isAdminLoggedIn !== "true") {
-        alert("You must be logged in as an admin to access this page.");
+  const checkAdminLoggedIn = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/IsAdminLoggedIn", {
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.isAdmin) {
+          setIsAdmin(true);
+        } else {
+          alert("You must be logged in as an admin to access this page.");
+          navigate("/");
+        }
+      } else {
+        alert("Failed to verify admin status. Redirecting to home page.");
         navigate("/");
       }
-    }, [navigate]);
-  const handleClick = () => {
-    // Navigate to '/menu' when back is clicked
-    navigate('/calender');
+    } catch (error) {
+      console.error("Error checking admin login status:", error);
+      alert("An error occurred. Redirecting to home page.");
+      navigate("/");
+    }
   };
+  
+  const handleClick = () => {
+    navigate("/");
+  };
+
+  useEffect(() => {
+    checkAdminLoggedIn();
+  }, []);
 
   const handleCreateEvent = async () => {
     if (new Date(EventDate) < new Date()) {

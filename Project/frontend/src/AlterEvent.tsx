@@ -44,7 +44,7 @@ export const AlterEvent: React.FC = () => {
   }, []);
 
   const handleClick = () => {
-    navigate("/menu");
+    navigate("/");
   };
 
   const handleAlterEvent = async () => {
