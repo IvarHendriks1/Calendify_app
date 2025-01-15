@@ -96,6 +96,19 @@ public class LoginController : Controller
         return Ok($"Logged in as {user}");
     }
 
+    [HttpGet("ForgotPassword")]
+    public IActionResult ForgotPassword()
+    {
+        return Ok(_loginService.ForgotPassword());
+    }
+
+
+    [HttpPut("Password")]
+    public IActionResult Password([FromBody] string email, [FromBody] string password)
+    {
+        if (_loginService.Password(email, password)) return Ok();
+        return BadRequest();
+    }
 
     [AuthorizationFilter]
     [HttpGet("Logout")]

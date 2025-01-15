@@ -8,6 +8,7 @@ import { CalendarPage } from './CalenderPage';
 import { AlterEvent } from './AlterEvent';
 import { RegisterPopup } from './ResgisterPopup';
 import { DeleteEvent } from './DeletePopup';
+import { ForgotPassword } from './ForgotPassword';
 
 import SearchPage from './SearchPage';
 import './Styles.css';
@@ -16,7 +17,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <div>
-        <Header/>
+        <Header />
 
         <Routes>
           <Route path="/" element={<UserInput />} />
@@ -25,7 +26,8 @@ const App: React.FC = () => {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/alter" element={<AlterEvent />} />
           <Route path="/delete-event" element={<DeleteEvent />} />
-          <Route path="/RegisterPopup" element={<RegisterPopup />} />
+          <Route path="/registerpopup" element={<RegisterPopup />} />
+          <Route path="/forgot" element={<ForgotPassword />} />
         </Routes>
       </div>
     </Router>

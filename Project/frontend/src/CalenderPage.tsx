@@ -95,6 +95,12 @@ export const CalendarPage: React.FC = () => {
     navigate('/delete-event');
   };
 
+  const handleRegister = () => {
+    console.log('Register clicked');
+    navigate('/registerpopup');
+
+  };
+
   const handleAttendEvent = () => {//implement this
     if (selectedEvent) {
       console.log(`Attending event: ${selectedEvent.title}`);
